@@ -104,8 +104,8 @@ webui-frontend/
 
 1. 克隆仓库 (Clone the repository):
 ```bash
-git clone <repository-url>
-cd pixivflow-webui-frontend  # 或你的仓库名称
+git clone https://github.com/zoidberg-xgd/pixivflow-webui.git
+cd pixivflow-webui
 ```
 
 2. 安装依赖 (Install dependencies):
