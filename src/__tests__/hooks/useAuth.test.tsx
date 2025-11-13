@@ -2,26 +2,20 @@ import React from 'react';
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 import { useAuth } from '../../hooks/useAuth';
-import { authService } from '../../services/authService';
+import { api } from '../../services/api';
+import { ApiResponse, AuthStatus, AuthLoginResponse } from '../../services/api/types';
 
-// Mock the auth service
-jest.mock('../../services/authService', () => ({
-  authService: {
+// Mock the API
+jest.mock('../../services/api', () => ({
+  api: {
     getAuthStatus: jest.fn(),
-    login: jest.fn(),
     loginWithToken: jest.fn(),
-    refreshToken: jest.fn(),
-    logout: jest.fn(),
   },
 }));
 
-// Mock useErrorHandler
-jest.mock('../../hooks/useErrorHandler', () => ({
-  useErrorHandler: () => ({
-    handleError: jest.fn(),
-  }),
-}));
+const mockApi = api as jest.Mocked<typeof api>;
 
 describe('useAuth', () => {
   let queryClient: QueryClient;
@@ -43,12 +37,22 @@ describe('useAuth', () => {
 
   describe('authentication status', () => {
     it('should fetch auth status successfully', async () => {
-      const mockAuthStatus = {
+      const mockAuthStatus: AuthStatus = {
         isAuthenticated: true,
-        user: { username: 'testuser', pixivId: '12345' },
+        user: { id: '12345', name: 'testuser' },
       };
 
-      (authService.getAuthStatus as jest.Mock).mockResolvedValue(mockAuthStatus);
+      const mockResponse: AxiosResponse<ApiResponse<AuthStatus>> = {
+        data: {
+          data: mockAuthStatus,
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as never,
+      };
+
+      mockApi.getAuthStatus.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -56,18 +60,27 @@ describe('useAuth', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.isAuthenticated).toBe(true);
-      expect(result.current.user).toEqual(mockAuthStatus.user);
-      expect(authService.getAuthStatus).toHaveBeenCalledTimes(1);
+      expect(result.current.authenticated).toBe(true);
+      expect(result.current.data).toBeDefined();
+      expect(mockApi.getAuthStatus).toHaveBeenCalledTimes(1);
     });
 
     it('should handle unauthenticated status', async () => {
-      const mockAuthStatus = {
+      const mockAuthStatus: AuthStatus = {
         isAuthenticated: false,
-        user: null,
       };
 
-      (authService.getAuthStatus as jest.Mock).mockResolvedValue(mockAuthStatus);
+      const mockResponse: AxiosResponse<ApiResponse<AuthStatus>> = {
+        data: {
+          data: mockAuthStatus,
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as never,
+      };
+
+      mockApi.getAuthStatus.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -75,13 +88,12 @@ describe('useAuth', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.isAuthenticated).toBe(false);
-      expect(result.current.user).toBeNull();
+      expect(result.current.authenticated).toBe(false);
     });
 
     it('should handle auth status error', async () => {
       const error = new Error('Failed to fetch auth status');
-      (authService.getAuthStatus as jest.Mock).mockRejectedValue(error);
+      mockApi.getAuthStatus.mockRejectedValue(error);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -89,43 +101,43 @@ describe('useAuth', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.error).toBeTruthy();
+      expect(result.current.isError).toBe(true);
+      expect(result.current.authenticated).toBe(false);
     });
   });
 
-  describe('login', () => {
-    it('should login successfully with username and password', async () => {
-      const mockAuthStatus = {
+  describe('login with token', () => {
+    it('should login with token successfully', async () => {
+      const mockAuthStatus: AuthStatus = {
         isAuthenticated: true,
-        user: { username: 'testuser', pixivId: '12345' },
+        user: { id: '12345', name: 'testuser' },
       };
 
-      (authService.getAuthStatus as jest.Mock).mockResolvedValue(mockAuthStatus);
-      (authService.login as jest.Mock).mockResolvedValue(mockAuthStatus);
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      await result.current.loginAsync({
-        username: 'testuser',
-        password: 'password123',
-        headless: true,
-      });
-
-      expect(authService.login).toHaveBeenCalledWith('testuser', 'password123', true, undefined);
-    });
-
-    it('should login with token', async () => {
-      const mockAuthStatus = {
-        isAuthenticated: true,
-        user: { username: 'testuser', pixivId: '12345' },
+      const mockAuthResponse: AxiosResponse<ApiResponse<AuthLoginResponse>> = {
+        data: {
+          data: {
+            refreshToken: 'new_refresh_token',
+            user: mockAuthStatus.user,
+          },
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as never,
       };
 
-      (authService.getAuthStatus as jest.Mock).mockResolvedValue(mockAuthStatus);
-      (authService.loginWithToken as jest.Mock).mockResolvedValue(mockAuthStatus);
+      const mockStatusResponse: AxiosResponse<ApiResponse<AuthStatus>> = {
+        data: {
+          data: mockAuthStatus,
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as never,
+      };
+
+      mockApi.getAuthStatus.mockResolvedValue(mockStatusResponse);
+      mockApi.loginWithToken.mockResolvedValue(mockAuthResponse);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -135,18 +147,27 @@ describe('useAuth', () => {
 
       await result.current.loginWithTokenAsync('refresh_token_123');
 
-      expect(authService.loginWithToken).toHaveBeenCalledWith('refresh_token_123');
+      expect(mockApi.loginWithToken).toHaveBeenCalledWith('refresh_token_123');
     });
 
-    it('should handle login error', async () => {
-      const mockAuthStatus = {
+    it('should handle login with token error', async () => {
+      const mockAuthStatus: AuthStatus = {
         isAuthenticated: false,
-        user: null,
+      };
+
+      const mockStatusResponse: AxiosResponse<ApiResponse<AuthStatus>> = {
+        data: {
+          data: mockAuthStatus,
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as never,
       };
 
       const error = new Error('Login failed');
-      (authService.getAuthStatus as jest.Mock).mockResolvedValue(mockAuthStatus);
-      (authService.login as jest.Mock).mockRejectedValue(error);
+      mockApi.getAuthStatus.mockResolvedValue(mockStatusResponse);
+      mockApi.loginWithToken.mockRejectedValue(error);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -155,107 +176,43 @@ describe('useAuth', () => {
       });
 
       await expect(
-        result.current.loginAsync({
-          username: 'testuser',
-          password: 'wrongpassword',
-        })
+        result.current.loginWithTokenAsync('invalid_token')
       ).rejects.toThrow('Login failed');
     });
   });
 
-  describe('refresh token', () => {
-    it('should refresh token successfully', async () => {
-      const mockAuthStatus = {
-        isAuthenticated: true,
-        user: { username: 'testuser', pixivId: '12345' },
-      };
-
-      (authService.getAuthStatus as jest.Mock).mockResolvedValue(mockAuthStatus);
-      (authService.refreshToken as jest.Mock).mockResolvedValue(mockAuthStatus);
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      await result.current.refreshTokenAsync('refresh_token_123');
-
-      expect(authService.refreshToken).toHaveBeenCalledWith('refresh_token_123');
-    });
-
-    it('should refresh token without parameter', async () => {
-      const mockAuthStatus = {
-        isAuthenticated: true,
-        user: { username: 'testuser', pixivId: '12345' },
-      };
-
-      (authService.getAuthStatus as jest.Mock).mockResolvedValue(mockAuthStatus);
-      (authService.refreshToken as jest.Mock).mockResolvedValue(mockAuthStatus);
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      await result.current.refreshTokenAsync();
-
-      expect(authService.refreshToken).toHaveBeenCalledWith(undefined);
-    });
-  });
-
-  describe('logout', () => {
-    it('should logout successfully', async () => {
-      const mockAuthStatus = {
-        isAuthenticated: true,
-        user: { username: 'testuser', pixivId: '12345' },
-      };
-
-      (authService.getAuthStatus as jest.Mock).mockResolvedValue(mockAuthStatus);
-      (authService.logout as jest.Mock).mockResolvedValue(undefined);
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      await result.current.logoutAsync();
-
-      expect(authService.logout).toHaveBeenCalledTimes(1);
-    });
-
-    it('should handle logout error', async () => {
-      const mockAuthStatus = {
-        isAuthenticated: true,
-        user: { username: 'testuser', pixivId: '12345' },
-      };
-
-      const error = new Error('Logout failed');
-      (authService.getAuthStatus as jest.Mock).mockResolvedValue(mockAuthStatus);
-      (authService.logout as jest.Mock).mockRejectedValue(error);
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      await expect(result.current.logoutAsync()).rejects.toThrow('Logout failed');
-    });
-  });
-
   describe('loading states', () => {
-    it('should track login loading state', async () => {
-      const mockAuthStatus = {
+    it('should track login with token loading state', async () => {
+      const mockAuthStatus: AuthStatus = {
         isAuthenticated: false,
-        user: null,
       };
 
-      (authService.getAuthStatus as jest.Mock).mockResolvedValue(mockAuthStatus);
-      (authService.login as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve(mockAuthStatus), 100))
+      const mockStatusResponse: AxiosResponse<ApiResponse<AuthStatus>> = {
+        data: {
+          data: mockAuthStatus,
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as never,
+      };
+
+      const mockAuthResponse: AxiosResponse<ApiResponse<AuthLoginResponse>> = {
+        data: {
+          data: {
+            refreshToken: 'new_refresh_token',
+            user: { id: '12345', name: 'testuser' },
+          },
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as never,
+      };
+
+      mockApi.getAuthStatus.mockResolvedValue(mockStatusResponse);
+      mockApi.loginWithToken.mockImplementation(
+        () => new Promise((resolve) => setTimeout(() => resolve(mockAuthResponse), 100))
       );
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -264,49 +221,16 @@ describe('useAuth', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      const loginPromise = result.current.loginAsync({
-        username: 'testuser',
-        password: 'password123',
-      });
+      const loginPromise = result.current.loginWithTokenAsync('refresh_token_123');
 
       await waitFor(() => {
-        expect(result.current.isLoggingIn).toBe(true);
+        expect(result.current.isLoggingInWithToken).toBe(true);
       });
 
       await loginPromise;
 
       await waitFor(() => {
-        expect(result.current.isLoggingIn).toBe(false);
-      });
-    });
-
-    it('should track refresh token loading state', async () => {
-      const mockAuthStatus = {
-        isAuthenticated: true,
-        user: { username: 'testuser', pixivId: '12345' },
-      };
-
-      (authService.getAuthStatus as jest.Mock).mockResolvedValue(mockAuthStatus);
-      (authService.refreshToken as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve(mockAuthStatus), 100))
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      const refreshPromise = result.current.refreshTokenAsync();
-
-      await waitFor(() => {
-        expect(result.current.isRefreshing).toBe(true);
-      });
-
-      await refreshPromise;
-
-      await waitFor(() => {
-        expect(result.current.isRefreshing).toBe(false);
+        expect(result.current.isLoggingInWithToken).toBe(false);
       });
     });
   });
