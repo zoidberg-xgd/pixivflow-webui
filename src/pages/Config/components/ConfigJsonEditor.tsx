@@ -29,7 +29,6 @@ export const ConfigJsonEditor: React.FC<ConfigJsonEditorProps> = ({
   const [jsonEditorLoading, setJsonEditorLoading] = useState(false);
   const [lastReadContent, setLastReadContent] = useState<string>('');
   const [hasExternalChanges, setHasExternalChanges] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   
   const lastReadContentRef = useRef<string>('');
   const jsonContentRef = useRef<string>('');
