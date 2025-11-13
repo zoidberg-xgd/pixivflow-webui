@@ -7,10 +7,10 @@ import { FormModal } from '../../../components/modals/FormModal';
 
 describe('FormModal', () => {
   const TestForm: React.FC<{
-    onSubmit: (values: any) => void | Promise<void>;
+    onSubmit: (values: Record<string, unknown>) => void | Promise<void>;
     onCancel?: () => void;
     open?: boolean;
-    initialValues?: Record<string, any>;
+    initialValues?: Record<string, unknown>;
     submitLoading?: boolean;
   }> = ({ onSubmit, onCancel, open = true, initialValues, submitLoading }) => {
     const [form] = Form.useForm();

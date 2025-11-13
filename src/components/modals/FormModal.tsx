@@ -20,7 +20,7 @@ export interface FormModalProps extends Omit<ModalProps, 'onOk' | 'onCancel'> {
   /**
    * Callback when form is submitted
    */
-  onSubmit: (values: any) => void | Promise<void>;
+  onSubmit: (values: Record<string, unknown>) => void | Promise<void>;
   
   /**
    * Callback when modal is cancelled
@@ -45,7 +45,7 @@ export interface FormModalProps extends Omit<ModalProps, 'onOk' | 'onCancel'> {
   /**
    * Initial form values
    */
-  initialValues?: Record<string, any>;
+  initialValues?: Record<string, unknown>;
   
   /**
    * Form layout
@@ -106,7 +106,7 @@ export const FormModal: React.FC<FormModalProps> = memo(({
   const handleSubmit = useCallback(async () => {
     try {
       const values = await form.validateFields();
-      await onSubmit(values);
+      await onSubmit(values as Record<string, unknown>);
       if (resetOnSubmit) {
         form.resetFields();
       }

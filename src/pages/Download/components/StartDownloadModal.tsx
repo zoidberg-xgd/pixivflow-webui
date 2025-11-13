@@ -15,7 +15,7 @@ interface Target {
   type: 'illustration' | 'novel';
   tag?: string;
   limit?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface StartDownloadModalProps {
@@ -101,7 +101,7 @@ export const StartDownloadModal: React.FC<StartDownloadModalProps> = ({
             size="large"
             showSearch
             filterOption={(input, option) => {
-              const children = option?.children as any;
+              const children = option?.children;
               const text = typeof children === 'string' ? children : String(children || '');
               return text.toLowerCase().includes(input.toLowerCase());
             }}

@@ -78,7 +78,8 @@ export const QUERY_KEYS = {
   // Download
   DOWNLOAD_STATUS: (taskId?: string) => taskId ? ['download', 'status', taskId] : ['download', 'status'],
   DOWNLOAD_LOGS: (taskId: string) => ['download', 'logs', taskId],
-  DOWNLOAD_HISTORY: (params?: any) => params ? ['download', 'history', params] : ['download', 'history'],
+  DOWNLOAD_HISTORY: (params?: { page?: number; limit?: number; type?: string; tag?: string; startDate?: string; endDate?: string }) => 
+    params ? ['download', 'history', params] : ['download', 'history'],
   INCOMPLETE_TASKS: ['download', 'incomplete'],
   
   // Stats
@@ -88,11 +89,14 @@ export const QUERY_KEYS = {
   STATS_AUTHORS: (limit?: number) => limit ? ['stats', 'authors', limit] : ['stats', 'authors'],
   
   // Logs
-  LOGS: (params?: any) => params ? ['logs', params] : ['logs'],
+  LOGS: (params?: { page?: number; limit?: number; level?: string; search?: string }) => 
+    params ? ['logs', params] : ['logs'],
   
   // Files
-  FILES: (params?: any) => params ? ['files', params] : ['files'],
-  FILES_RECENT: (params?: any) => params ? ['files', 'recent', params] : ['files', 'recent'],
+  FILES: (params?: { path?: string; type?: string; sort?: string; order?: string; dateFilter?: string }) => 
+    params ? ['files', params] : ['files'],
+  FILES_RECENT: (params?: { limit?: number; type?: 'illustration' | 'novel'; filter?: string }) => 
+    params ? ['files', 'recent', params] : ['files', 'recent'],
   FILES_PREVIEW: (path: string, type?: string) => type ? ['files', 'preview', path, type] : ['files', 'preview', path],
 } as const;
 

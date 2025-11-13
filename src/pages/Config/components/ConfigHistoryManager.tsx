@@ -35,7 +35,7 @@ export const ConfigHistoryManager: React.FC<ConfigHistoryManagerProps> = ({
       if (onConfigApplied) {
         onConfigApplied();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error);
     }
   };
@@ -45,7 +45,7 @@ export const ConfigHistoryManager: React.FC<ConfigHistoryManagerProps> = ({
       await deleteAsync(id);
       message.success(t('config.historyDeleted'));
       refetch();
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error);
     }
   };
@@ -86,7 +86,7 @@ export const ConfigHistoryManager: React.FC<ConfigHistoryManagerProps> = ({
       title: t('common.actions'),
       key: 'action',
       width: 200,
-      render: (_: any, record: ConfigHistoryItem) => (
+      render: (_: unknown, record: ConfigHistoryItem) => (
         <Space>
           <Button
             type="link"

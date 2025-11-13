@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Table } from 'antd';
+import { Table, TableColumnsType } from 'antd';
 import { DataTableProps } from './types';
 import { EmptyState } from '../common/EmptyState';
 
@@ -7,7 +7,7 @@ import { EmptyState } from '../common/EmptyState';
  * Universal data table component with built-in support for
  * sorting, filtering, pagination, and loading states.
  */
-export function DataTable<T extends Record<string, any> = any>({
+export function DataTable<T extends Record<string, unknown> = Record<string, unknown>>({
   data,
   columns,
   loading = false,
@@ -34,15 +34,15 @@ export function DataTable<T extends Record<string, any> = any>({
   // Process columns to handle sortable/filterable
   const processedColumns = useMemo(() => {
     return columns.map((col) => {
-      const processedCol: any = { ...col };
+      const processedCol = { ...col } as TableColumnsType<T>[number];
       
       // Handle sortable columns
       if (col.sortable && !col.sorter) {
         processedCol.sorter = (a: T, b: T) => {
-          const dataIndex = (col as any).dataIndex as string | string[];
-          const key = Array.isArray(dataIndex) ? dataIndex[0] : dataIndex;
-          const aVal = key ? a[key] : undefined;
-          const bVal = key ? b[key] : undefined;
+          const dataIndex = col.dataIndex;
+          const key = Array.isArray(dataIndex) ? dataIndex[0] : (typeof dataIndex === 'string' ? dataIndex : undefined);
+          const aVal = key ? (a as Record<string, unknown>)[key] : undefined;
+          const bVal = key ? (b as Record<string, unknown>)[key] : undefined;
           
           if (aVal === bVal) return 0;
           if (aVal == null) return 1;
@@ -66,12 +66,19 @@ export function DataTable<T extends Record<string, any> = any>({
           text: opt.label,
           value: opt.value,
         }));
-        processedCol.onFilter = col.onFilter || ((value: any, record: T) => {
-          const dataIndex = (col as any).dataIndex as string | string[];
-          const key = Array.isArray(dataIndex) ? dataIndex[0] : dataIndex;
-          const recordValue = key ? record[key] : undefined;
-          return recordValue === value;
-        });
+        processedCol.onFilter = col.onFilter 
+          ? (value: boolean | React.Key, record: T) => {
+              // Convert value to our expected type
+              const filterValue = typeof value === 'bigint' ? Number(value) : value;
+              return col.onFilter!(filterValue as string | number | boolean, record);
+            }
+          : ((value: boolean | React.Key, record: T) => {
+              const dataIndex = col.dataIndex;
+              const key = Array.isArray(dataIndex) ? dataIndex[0] : (typeof dataIndex === 'string' ? dataIndex : undefined);
+              const recordValue = key ? (record as Record<string, unknown>)[key] : undefined;
+              const filterValue = typeof value === 'bigint' ? Number(value) : value;
+              return recordValue === filterValue;
+            });
       }
       
       return processedCol;

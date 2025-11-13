@@ -16,7 +16,19 @@ export const authService = {
   /**
    * Login to Pixiv
    */
-  async login(username: string, password: string, headless = true, proxy?: any) {
+  async login(
+    username: string,
+    password: string,
+    headless = true,
+    proxy?: {
+      enabled?: boolean;
+      host?: string;
+      port?: number;
+      protocol?: string;
+      username?: string;
+      password?: string;
+    }
+  ) {
     const response = await api.login(username, password, headless, proxy);
     return response.data.data;
   },

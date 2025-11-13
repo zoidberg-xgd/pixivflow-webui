@@ -195,7 +195,7 @@ export function NormalizeFilesModal({ visible, onClose }: NormalizeFilesModalPro
                 message={t('files.processingErrors')}
                 description={
                   <div style={{ maxHeight: '200px', overflow: 'auto' }}>
-                    {result.errors.map((error: any, index: number) => (
+                    {result.errors.map((error, index: number) => (
                       <div key={index} style={{ marginBottom: 8 }}>
                         <Text type="danger" strong>
                           {error.file}:

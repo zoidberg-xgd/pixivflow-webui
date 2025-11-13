@@ -13,7 +13,7 @@ jest.mock('react-i18next', () => ({
 }));
 
 jest.mock('../../../pages/Config/components/TargetModal', () => ({
-  TargetModal: ({ visible, onSave, onCancel }: any) =>
+  TargetModal: ({ visible, onSave, onCancel }: { visible: boolean; onSave: (target: unknown) => void; onCancel: () => void }) =>
     visible ? (
       <div data-testid="target-modal">
         <button

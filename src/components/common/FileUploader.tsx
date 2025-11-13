@@ -95,10 +95,11 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   
   const fileList = controlledFileList ?? internalFileList;
 
-  const handleChange = (info: any) => {
+  const handleChange = (info: { fileList: Array<{ status?: string; originFileObj?: File; name?: string }> }) => {
     const files = info.fileList
-      .filter((file: any) => file.status === 'done' || file.originFileObj)
-      .map((file: any) => file.originFileObj || file);
+      .filter((file) => file.status === 'done' || file.originFileObj)
+      .map((file) => file.originFileObj || file)
+      .filter((file): file is File => file instanceof File);
     
     if (controlledFileList === undefined) {
       setInternalFileList(files);

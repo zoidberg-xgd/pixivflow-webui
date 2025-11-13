@@ -14,12 +14,12 @@ export interface FormFieldProps extends Omit<FormItemProps, 'children'> {
   /**
    * Options for select type
    */
-  options?: Array<{ label: string; value: any; disabled?: boolean }>;
+  options?: Array<{ label: string; value: string | number; disabled?: boolean }>;
   
   /**
    * Option groups for select type
    */
-  optionGroups?: Array<{ label: string; options: Array<{ label: string; value: any; disabled?: boolean }> }>;
+  optionGroups?: Array<{ label: string; options: Array<{ label: string; value: string | number; disabled?: boolean }> }>;
   
   /**
    * Placeholder text

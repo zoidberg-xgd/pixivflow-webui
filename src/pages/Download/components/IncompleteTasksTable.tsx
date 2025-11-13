@@ -135,7 +135,7 @@ export const IncompleteTasksTable: React.FC<IncompleteTasksTableProps> = ({
       key: 'action',
       width: 150,
       fixed: 'right' as const,
-      render: (_: any, record: IncompleteTask) => (
+      render: (_: unknown, record: IncompleteTask) => (
         <Space>
           <Button
             type="link"

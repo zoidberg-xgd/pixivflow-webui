@@ -72,7 +72,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
       disabled={disabled}
       style={{ width: '100%', ...style }}
       className={className}
-      {...(datePickerProps as any)}
+      {...datePickerProps}
     />
   );
 };

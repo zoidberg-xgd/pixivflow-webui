@@ -50,7 +50,7 @@ export function useLayoutAuth() {
       setTimeout(() => {
         window.location.href = '/login';
       }, 500);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Logout failed:', error);
       message.error(t('layout.logoutFailed'));
       setIsLoggingOut(false);
@@ -70,7 +70,7 @@ export function useLayoutAuth() {
 
       message.destroy();
       message.success(t('layout.tokenRefreshed'));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Token refresh failed:', error);
       message.destroy();
       message.error(t('layout.tokenRefreshFailed'));

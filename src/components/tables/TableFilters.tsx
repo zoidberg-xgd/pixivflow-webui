@@ -1,7 +1,9 @@
 import { useCallback, useMemo, memo } from 'react';
 import { Space, Select, Input, DatePicker, InputNumber, Button } from 'antd';
+import type { RangePickerProps } from 'antd/es/date-picker';
 import { ReloadOutlined } from '@ant-design/icons';
 import { TableFiltersProps } from './types';
+import type { Dayjs } from 'dayjs';
 
 const { Search } = Input;
 const { RangePicker } = DatePicker;
@@ -19,7 +21,7 @@ export const TableFilters: React.FC<TableFiltersProps> = memo(({
   style,
   className,
 }) => {
-  const handleFilterChange = useCallback((key: string, value: any) => {
+  const handleFilterChange = useCallback((key: string, value: string | number | boolean | null | undefined | unknown) => {
     onChange({
       ...values,
       [key]: value,
@@ -27,7 +29,7 @@ export const TableFilters: React.FC<TableFiltersProps> = memo(({
   }, [onChange, values]);
 
   const handleReset = useCallback(() => {
-    const resetValues: Record<string, any> = {};
+    const resetValues: Record<string, string | number | boolean | null | undefined | unknown> = {};
     filters.forEach((filter) => {
       resetValues[filter.key] = filter.defaultValue ?? (filter.type === 'dateRange' ? null : undefined);
     });
@@ -60,7 +62,7 @@ export const TableFilters: React.FC<TableFiltersProps> = memo(({
             <Search
               key={filter.key}
               placeholder={filter.placeholder || `Search ${filter.label}`}
-              value={value}
+              value={typeof value === 'string' ? value : ''}
               onChange={(e) => handleFilterChange(filter.key, e.target.value)}
               allowClear
               style={{ minWidth: 200 }}
@@ -73,8 +75,8 @@ export const TableFilters: React.FC<TableFiltersProps> = memo(({
             <InputNumber
               key={filter.key}
               placeholder={filter.placeholder || `Enter ${filter.label}`}
-              value={value}
-              onChange={(val) => handleFilterChange(filter.key, val)}
+              value={typeof value === 'number' ? value : undefined}
+              onChange={(val) => handleFilterChange(filter.key, val ?? null)}
               style={{ minWidth: 150 }}
             />
           );
@@ -84,7 +86,7 @@ export const TableFilters: React.FC<TableFiltersProps> = memo(({
             <DatePicker
               key={filter.key}
               placeholder={filter.placeholder || `Select ${filter.label}`}
-              value={value}
+              value={value as unknown}
               onChange={(val) => handleFilterChange(filter.key, val)}
               allowClear
               style={{ minWidth: 200 }}
@@ -95,8 +97,8 @@ export const TableFilters: React.FC<TableFiltersProps> = memo(({
           return (
             <RangePicker
               key={filter.key}
-              value={value}
-              onChange={(val) => handleFilterChange(filter.key, val)}
+              value={value as RangePickerProps['value']}
+              onChange={(val) => handleFilterChange(filter.key, val as [Dayjs | null, Dayjs | null] | null)}
               style={{ minWidth: 300 }}
             />
           );

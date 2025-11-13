@@ -42,10 +42,11 @@ export const ConfigFilesManager: React.FC<ConfigFilesManagerProps> = ({
     try {
       setEditingConfigFile(filename);
       setJsonEditorVisible(true);
-    } catch (error: any) {
+    } catch (error: unknown) {
       const { message: errorMessage } = extractErrorInfo(error);
+      const errorObj = error instanceof Error ? error : null;
       message.error(
-        `${t('config.configFileReadFailed')}: ${errorMessage || error?.message || t('config.unknownError')}`
+        `${t('config.configFileReadFailed')}: ${errorMessage || errorObj?.message || t('config.unknownError')}`
       );
     }
   };
@@ -59,7 +60,7 @@ export const ConfigFilesManager: React.FC<ConfigFilesManagerProps> = ({
       if (onConfigFileSwitch) {
         onConfigFileSwitch();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error);
     }
   };
@@ -69,7 +70,7 @@ export const ConfigFilesManager: React.FC<ConfigFilesManagerProps> = ({
       await deleteFileAsync(filename);
       message.success(t('config.configFileDeleted'));
       refetch();
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleError(error);
     }
   };
@@ -108,7 +109,7 @@ export const ConfigFilesManager: React.FC<ConfigFilesManagerProps> = ({
       title: t('common.actions'),
       key: 'action',
       width: 250,
-      render: (_: any, record: ConfigFile) => (
+      render: (_: unknown, record: ConfigFile) => (
         <Space>
           <Button
             type="link"

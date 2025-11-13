@@ -84,7 +84,7 @@ export const TaskHistoryTable: React.FC<TaskHistoryTableProps> = ({
       title: t('download.duration'),
       key: 'duration',
       width: 120,
-      render: (_: any, record: Task) => {
+      render: (_: unknown, record: Task) => {
         return calculateDuration(
           new Date(record.startTime),
           record.endTime ? new Date(record.endTime) : undefined

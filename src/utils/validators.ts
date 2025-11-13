@@ -113,7 +113,7 @@ export function isInRange(value: number, min: number, max: number): boolean {
  * @param value - Value to check
  * @returns True if not empty, false otherwise
  */
-export function isRequired(value: any): boolean {
+export function isRequired(value: unknown): boolean {
   if (value === null || value === undefined) return false;
   if (typeof value === 'string') return value.trim().length > 0;
   if (Array.isArray(value)) return value.length > 0;

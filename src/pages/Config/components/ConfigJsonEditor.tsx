@@ -29,6 +29,7 @@ export const ConfigJsonEditor: React.FC<ConfigJsonEditorProps> = ({
   const [jsonEditorLoading, setJsonEditorLoading] = useState(false);
   const [lastReadContent, setLastReadContent] = useState<string>('');
   const [hasExternalChanges, setHasExternalChanges] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   
   const lastReadContentRef = useRef<string>('');
   const jsonContentRef = useRef<string>('');
@@ -164,6 +165,8 @@ export const ConfigJsonEditor: React.FC<ConfigJsonEditorProps> = ({
       lastReadContentRef.current = jsonContent;
       jsonContentRef.current = jsonContent;
       setHasExternalChanges(false);
+      setIsEditing(false);
+      isEditingRef.current = false;
       
       // Refresh config data
       await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CONFIG });
@@ -263,6 +266,8 @@ export const ConfigJsonEditor: React.FC<ConfigJsonEditorProps> = ({
           value={jsonContent}
           onChange={(value) => {
             setJsonContent(value);
+            setIsEditing(true);
+            isEditingRef.current = true;
             if (hasExternalChanges && value !== lastReadContent) {
               setHasExternalChanges(false);
             }

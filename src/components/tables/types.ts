@@ -4,7 +4,7 @@ import React from 'react';
 /**
  * Column definition for DataTable
  */
-export interface DataTableColumn<T = any> extends Omit<TableColumnsType<T>[number], 'dataIndex'> {
+export interface DataTableColumn<T = unknown> extends Omit<TableColumnsType<T>[number], 'dataIndex'> {
   /**
    * Data index for the column
    */
@@ -27,18 +27,19 @@ export interface DataTableColumn<T = any> extends Omit<TableColumnsType<T>[numbe
   /**
    * Filter options for the column
    */
-  filterOptions?: Array<{ label: string; value: any }>;
+  filterOptions?: Array<{ label: string; value: string | number | boolean }>;
   
   /**
    * Custom filter function
+   * Note: Ant Design's onFilter accepts boolean | Key, but we use a more restrictive type for better type safety
    */
-  onFilter?: (value: any, record: T) => boolean;
+  onFilter?: (value: string | number | boolean | bigint, record: T) => boolean;
 }
 
 /**
  * Props for DataTable component
  */
-export interface DataTableProps<T = any> extends Omit<TableProps<T>, 'columns' | 'dataSource' | 'pagination'> {
+export interface DataTableProps<T = unknown> extends Omit<TableProps<T>, 'columns' | 'dataSource' | 'pagination'> {
   /**
    * Table data
    */
@@ -135,7 +136,7 @@ export interface TableFilterConfig {
   /**
    * Filter options (for select type)
    */
-  options?: Array<{ label: string; value: any }>;
+  options?: Array<{ label: string; value: string | number | boolean }>;
   
   /**
    * Placeholder text
@@ -145,7 +146,7 @@ export interface TableFilterConfig {
   /**
    * Default value
    */
-  defaultValue?: any;
+  defaultValue?: string | number | boolean | null;
   
   /**
    * Whether the filter is required
@@ -164,13 +165,14 @@ export interface TableFiltersProps {
   
   /**
    * Current filter values
+   * Can be string, number, boolean, Dayjs, or array of Dayjs for date ranges
    */
-  values: Record<string, any>;
+  values: Record<string, string | number | boolean | null | undefined | unknown>;
   
   /**
    * Callback when filters change
    */
-  onChange: (values: Record<string, any>) => void;
+  onChange: (values: Record<string, string | number | boolean | null | undefined | unknown>) => void;
   
   /**
    * Callback to reset filters
