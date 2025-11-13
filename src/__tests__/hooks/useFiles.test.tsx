@@ -48,7 +48,7 @@ describe('useFiles', () => {
     ];
     const mockDirectories = [{ name: 'dir1', path: '/path/to/dir1', type: 'directory' as const }];
 
-    (fileService.listFiles as jest.Mock<any>).mockResolvedValue({
+    (fileService.listFiles as jest.Mock).mockResolvedValue({
       files: mockFiles,
       directories: mockDirectories,
       currentPath: '/path/to',
@@ -66,7 +66,7 @@ describe('useFiles', () => {
   });
 
   it('should handle empty files list', async () => {
-    (fileService.listFiles as jest.Mock<any>).mockResolvedValue({
+    (fileService.listFiles as jest.Mock).mockResolvedValue({
       files: [],
       directories: [],
       currentPath: '',
@@ -92,8 +92,8 @@ describe('useFiles', () => {
   });
 
   it('should handle delete file mutation', async () => {
-    (fileService.deleteFile as jest.Mock<any>).mockResolvedValue(undefined);
-    (fileService.listFiles as jest.Mock<any>).mockResolvedValue({
+    (fileService.deleteFile as jest.Mock).mockResolvedValue(undefined);
+    (fileService.listFiles as jest.Mock).mockResolvedValue({
       files: [],
       directories: [],
       currentPath: '',
@@ -139,7 +139,7 @@ describe('useRecentFiles', () => {
       { name: 'recent1.jpg', path: '/path/to/recent1.jpg', type: 'file' as const },
     ];
 
-    (fileService.getRecentFiles as jest.Mock<any>).mockResolvedValue({
+    (fileService.getRecentFiles as jest.Mock).mockResolvedValue({
       files: mockFiles,
     });
 
@@ -154,7 +154,7 @@ describe('useRecentFiles', () => {
   });
 
   it('should handle empty recent files', async () => {
-    (fileService.getRecentFiles as jest.Mock<any>).mockResolvedValue({
+    (fileService.getRecentFiles as jest.Mock).mockResolvedValue({
       files: [],
     });
 
@@ -188,7 +188,7 @@ describe('useFilePreview', () => {
 
   it('should fetch file preview when path is provided', async () => {
     const mockBlob = new Blob(['test content'], { type: 'image/jpeg' });
-    (fileService.getFilePreview as jest.Mock<any>).mockResolvedValue(mockBlob);
+    (fileService.getFilePreview as jest.Mock).mockResolvedValue(mockBlob);
 
     const { result } = renderHook(() => useFilePreview('/path/to/file.jpg'), { wrapper });
 
@@ -237,7 +237,7 @@ describe('useFileNormalize', () => {
 
   it('should handle normalize mutation', async () => {
     const mockResult = { normalized: 10, errors: [] };
-    (fileService.normalizeFiles as jest.Mock<any>).mockResolvedValue(mockResult);
+    (fileService.normalizeFiles as jest.Mock).mockResolvedValue(mockResult);
 
     const { result } = renderHook(() => useFileNormalize(), { wrapper });
 

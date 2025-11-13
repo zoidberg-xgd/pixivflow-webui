@@ -46,7 +46,7 @@ describe('useStatsOverview', () => {
       recentDownloads: 10,
     };
 
-    (statsService.getStatsOverview as jest.Mock<any>).mockResolvedValue(mockStats);
+    (statsService.getStatsOverview as jest.Mock).mockResolvedValue(mockStats);
 
     const { result } = renderHook(() => useStatsOverview(), { wrapper });
 
@@ -59,7 +59,7 @@ describe('useStatsOverview', () => {
   });
 
   it('should handle loading state', () => {
-    (statsService.getStatsOverview as jest.Mock<any>).mockImplementation(
+    (statsService.getStatsOverview as jest.Mock).mockImplementation(
       () => new Promise(() => {}) // Never resolves
     );
 
@@ -102,7 +102,7 @@ describe('useDownloadStats', () => {
       novels: 10,
     };
 
-    (statsService.getDownloadStats as jest.Mock<any>).mockResolvedValue(mockStats);
+    (statsService.getDownloadStats as jest.Mock).mockResolvedValue(mockStats);
 
     const { result } = renderHook(() => useDownloadStats('7d'), { wrapper });
 
@@ -119,7 +119,7 @@ describe('useDownloadStats', () => {
       downloads: 100,
     };
 
-    (statsService.getDownloadStats as jest.Mock<any>).mockResolvedValue(mockStats);
+    (statsService.getDownloadStats as jest.Mock).mockResolvedValue(mockStats);
 
     const { result } = renderHook(() => useDownloadStats(), { wrapper });
 
@@ -157,7 +157,7 @@ describe('useTagStats', () => {
       ],
     };
 
-    (statsService.getTagStats as jest.Mock<any>).mockResolvedValue(mockStats);
+    (statsService.getTagStats as jest.Mock).mockResolvedValue(mockStats);
 
     const { result } = renderHook(() => useTagStats(10), { wrapper });
 
@@ -174,7 +174,7 @@ describe('useTagStats', () => {
       tags: [],
     };
 
-    (statsService.getTagStats as jest.Mock<any>).mockResolvedValue(mockStats);
+    (statsService.getTagStats as jest.Mock).mockResolvedValue(mockStats);
 
     const { result } = renderHook(() => useTagStats(), { wrapper });
 
@@ -212,7 +212,7 @@ describe('useAuthorStats', () => {
       ],
     };
 
-    (statsService.getAuthorStats as jest.Mock<any>).mockResolvedValue(mockStats);
+    (statsService.getAuthorStats as jest.Mock).mockResolvedValue(mockStats);
 
     const { result } = renderHook(() => useAuthorStats(10), { wrapper });
 
@@ -229,7 +229,7 @@ describe('useAuthorStats', () => {
       authors: [],
     };
 
-    (statsService.getAuthorStats as jest.Mock<any>).mockResolvedValue(mockStats);
+    (statsService.getAuthorStats as jest.Mock).mockResolvedValue(mockStats);
 
     const { result } = renderHook(() => useAuthorStats(), { wrapper });
 
