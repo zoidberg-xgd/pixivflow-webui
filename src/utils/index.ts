@@ -7,4 +7,5 @@ export * from './dateUtils';
 export * from './errorCodeTranslator';
 export * from './formatters';
 export * from './validators';
+export * from './authUtils';
 

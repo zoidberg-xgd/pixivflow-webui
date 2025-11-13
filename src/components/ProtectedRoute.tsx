@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../services/api';
 import { QUERY_KEYS } from '../constants';
+import { isAuthenticated } from '../utils/authUtils';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -24,28 +25,6 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     refetchOnMount: true, // Always refetch when component mounts
     refetchOnWindowFocus: false, // Don't refetch on window focus to avoid unnecessary requests
   });
-
-  // Helper to check if authenticated from API response
-  // Returns false if response is invalid, undefined, or explicitly not authenticated
-  const isAuthenticated = (response: any): boolean => {
-    // If response is null/undefined, not authenticated
-    if (!response) {
-      return false;
-    }
-    
-    // API response structure: response.data.data.authenticated or response.data.authenticated
-    const responseData = response?.data?.data || response?.data;
-    
-    // If responseData is null/undefined, not authenticated
-    if (!responseData) {
-      return false;
-    }
-    
-    // Only return true if explicitly authenticated
-    // Check multiple possible fields: authenticated, isAuthenticated, hasToken
-    return responseData?.authenticated === true 
-      || responseData?.isAuthenticated === true;
-  };
 
   const authenticated = !isError && isAuthenticated(data);
 

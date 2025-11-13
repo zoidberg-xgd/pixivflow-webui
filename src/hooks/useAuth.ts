@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../services/api';
 import { QUERY_KEYS } from '../constants';
+import { isAuthenticated as checkAuth } from '../utils/authUtils';
 
 /**
  * Hook to check authentication status
@@ -16,23 +17,7 @@ export function useAuth() {
     refetchOnWindowFocus: false,
   });
 
-  // Helper to check if authenticated from API response
-  const isAuthenticated = (response: any): boolean => {
-    if (!response) {
-      return false;
-    }
-    
-    const responseData = response?.data?.data || response?.data;
-    
-    if (!responseData) {
-      return false;
-    }
-    
-    return responseData?.authenticated === true 
-      || responseData?.isAuthenticated === true;
-  };
-
-  const authenticated = !isError && isAuthenticated(data);
+  const authenticated = !isError && checkAuth(data);
 
   return {
     authenticated,

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../../../services/api';
 import { translateErrorCode, extractErrorInfo } from '../../../utils/errorCodeTranslator';
 import { QUERY_KEYS } from '../../../constants';
+import { isAuthenticated } from '../../../utils/authUtils';
 import { useAuth } from '../../../hooks/useAuth';
 import { useLoginPolling } from '../../../hooks/useLoginPolling';
 import { useInteractiveLogin } from '../../../hooks/useInteractiveLogin';
@@ -42,25 +43,11 @@ export function useLoginFlow() {
   } = useAuth();
 
   // Helper to check if authenticated from API response
-  const isAuthenticated = useCallback((response: unknown): boolean => {
-    if (!response) return false;
-    let responseData: Record<string, unknown> | undefined;
-    if (typeof response === 'object' && response !== null) {
-      if ('data' in response && response.data) {
-        const data = response.data as Record<string, unknown>;
-        if ('data' in data && data.data) {
-          responseData = data.data as Record<string, unknown>;
-        } else {
-          responseData = data;
-        }
-      } else {
-        responseData = response as Record<string, unknown>;
-      }
-    }
-    const authenticated = responseData?.authenticated === true || responseData?.isAuthenticated === true || responseData?.hasToken === true;
-    console.log('[Login] Auth check:', { authenticated, data: responseData });
+  const checkAuth = useCallback((response: unknown): boolean => {
+    const authenticated = isAuthenticated(response);
+    console.log('[Login] Auth check:', { authenticated, response });
     return authenticated;
-  }, []);
+  }, [isAuthenticated]);
 
   // Handle successful login
   const handleLoginSuccess = useCallback(async () => {
@@ -78,7 +65,7 @@ export function useLoginFlow() {
       
       message.destroy('login-success');
       
-      if (isAuthenticated(result)) {
+      if (checkAuth(result)) {
         console.log('[Login] Authentication confirmed, navigating to dashboard...');
         message.success('✅ 登录成功！正在跳转到 Dashboard...');
         
@@ -123,14 +110,14 @@ export function useLoginFlow() {
       handleLoginSuccess();
     },
     refetchAuthStatus: refetchAuthStatusWrapper,
-    isAuthenticated,
+    isAuthenticated: checkAuth,
   });
 
   // Use interactive login hook
   const { handleInteractiveLogin, handleCheckStatus } = useInteractiveLogin({
     onLoginSuccess: () => setLoginStep(2),
     refetchAuthStatus: refetchAuthStatusWrapper,
-    isAuthenticated,
+    isAuthenticated: checkAuth,
     startPolling,
     stopPolling,
   });
@@ -188,7 +175,7 @@ export function useLoginFlow() {
     isLoggingInWithToken,
     authStatusLoading,
     authStatus,
-    isAuthenticated,
+    isAuthenticated: checkAuth,
     
     // Actions
     setLoginMode,

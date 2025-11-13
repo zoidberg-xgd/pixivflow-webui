@@ -4,33 +4,13 @@ import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { api } from '../services/api';
 import { QUERY_KEYS } from '../constants';
+import { isAuthenticated } from '../utils/authUtils';
 import type { ElectronLoginSuccessData, ElectronLoginError } from '../types/electron';
 
 export function useLogin() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-
-  // Helper to check if authenticated from API response
-  const isAuthenticated = useCallback((response: unknown): boolean => {
-    if (!response) return false;
-    let responseData: Record<string, unknown> | undefined;
-    if (typeof response === 'object' && response !== null) {
-      if ('data' in response && response.data) {
-        const data = response.data as Record<string, unknown>;
-        if ('data' in data && data.data) {
-          responseData = data.data as Record<string, unknown>;
-        } else {
-          responseData = data;
-        }
-      } else {
-        responseData = response as Record<string, unknown>;
-      }
-    }
-    return responseData?.authenticated === true 
-      || responseData?.isAuthenticated === true 
-      || responseData?.hasToken === true;
-  }, []);
 
   // Handle login success from Electron
   const handleElectronLoginSuccess = useCallback(async (data: ElectronLoginSuccessData) => {
@@ -78,7 +58,7 @@ export function useLogin() {
       message.error(t('dashboard.loginSuccessEventError', { error: errorMessage }));
       setIsLoggingIn(false);
     }
-  }, [queryClient, isAuthenticated, t]);
+  }, [queryClient, t]);
 
   // Handle login error from Electron
   const handleElectronLoginError = useCallback((error: ElectronLoginError) => {

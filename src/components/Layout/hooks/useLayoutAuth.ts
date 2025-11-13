@@ -5,6 +5,7 @@ import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../../services/api';
 import { QUERY_KEYS } from '../../../constants';
+import { isAuthenticated as checkAuth } from '../../../utils/authUtils';
 
 /**
  * Hook for managing authentication in Layout
@@ -26,13 +27,7 @@ export function useLayoutAuth() {
 
   // Helper to check if authenticated
   const isAuthenticated = (): boolean => {
-    if (!authStatus) return false;
-    const responseData = (authStatus as any)?.data?.data || (authStatus as any)?.data;
-    return (
-      responseData?.authenticated === true ||
-      responseData?.isAuthenticated === true ||
-      responseData?.hasToken === true
-    );
+    return checkAuth(authStatus);
   };
 
   const handleLogout = async () => {
