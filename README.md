@@ -217,5 +217,5 @@ For issues and questions:
 
 ---
 
-由 PixivFlow 团队用 ❤️ 构建  
-Built with ❤️ by the PixivFlow team
+用 ❤️ 构建  
+Built with ❤️

@@ -185,5 +185,5 @@ For issues and questions:
 
 ---
 
-Built with ❤️ by the PixivFlow team
+Built with ❤️
 
