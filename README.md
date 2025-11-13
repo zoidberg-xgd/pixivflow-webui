@@ -128,7 +128,7 @@ pixivflow-webui/
 
 1. 克隆仓库 (Clone the repository):
 ```bash
-git clone <repository-url>
+git clone https://github.com/zoidberg-xgd/pixivflow-webui.git
 cd pixivflow-webui
 ```
 
@@ -196,8 +196,8 @@ We welcome contributions! Please see the [Development Guide](./docs/DEVELOPMENT_
 
 ## 📝 许可证 (License)
 
-详细信息请参阅主项目的 LICENSE 文件。  
-See the main project LICENSE file for details.
+本项目采用 MIT 许可证。详细信息请参阅项目根目录的 LICENSE 文件（如果存在）。  
+This project is licensed under the MIT License. See the LICENSE file in the root directory for details (if available).
 
 ## 🙏 致谢 (Acknowledgments)
 

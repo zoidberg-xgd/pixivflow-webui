@@ -25,7 +25,7 @@
 
 1. **克隆仓库**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/zoidberg-xgd/pixivflow-webui.git
    cd pixivflow-webui
    ```
 
@@ -425,5 +425,5 @@ npm test -- --watch
 
 ## 📝 更新日志
 
-- **2025-01-XX**: 初始版本
+- **2025-01**: 初始版本
 

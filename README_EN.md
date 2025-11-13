@@ -115,13 +115,13 @@ pixivflow-webui/
 ### Prerequisites
 
 - Node.js 18+ and npm
-- Backend server running (see main project README)
+- Backend API server running (install and start backend first: `npm install -g pixivflow && pixivflow webui`)
 
 ### Installation
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/zoidberg-xgd/pixivflow-webui.git
 cd pixivflow-webui
 ```
 
@@ -166,7 +166,7 @@ We welcome contributions! Please see the [Development Guide](./docs/DEVELOPMENT_
 
 ## 📝 License
 
-See the main project LICENSE file for details.
+This project is licensed under the MIT License. See the LICENSE file in the root directory for details (if available).
 
 ## 🙏 Acknowledgments
 
