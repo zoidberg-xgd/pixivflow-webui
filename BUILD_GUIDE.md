@@ -25,25 +25,17 @@
 
 ## 🔧 安装步骤
 
-### 1. 安装后端依赖
+### 1. 安装依赖
 
 ```bash
 # 在项目根目录
-cd /path/to/PixivBatchDownloader-master
+cd pixivflow-webui
 npm install
 ```
 
-### 2. 安装前端依赖
+### 2. 准备图标文件（可选）
 
-```bash
-# 在 webui-frontend 目录
-cd webui-frontend
-npm install
-```
-
-### 3. 准备图标文件（可选）
-
-为了构建带有自定义图标的应用程序，您需要在 `webui-frontend/build/` 目录下放置以下图标文件：
+为了构建带有自定义图标的应用程序，您需要在 `build/` 目录下放置以下图标文件：
 
 - `icon.ico` - Windows 图标（256x256 或更大）
 - `icon.icns` - macOS 图标（1024x1024）
@@ -58,7 +50,6 @@ npm install
 #### 构建所有平台
 
 ```bash
-cd webui-frontend
 bash build-all-platforms.sh
 ```
 
@@ -93,7 +84,6 @@ bash build-all-platforms.sh linux x64
 #### 构建所有平台
 
 ```bash
-cd webui-frontend
 npm run electron:build:all
 ```
 
@@ -139,7 +129,7 @@ npm run electron:build:linux:all
 
 ## 📦 构建输出
 
-构建完成后，您会在 `webui-frontend/release/` 目录下找到构建产物：
+构建完成后，您会在 `release/` 目录下找到构建产物：
 
 ### Windows
 - `PixivFlow Setup x.x.x-x64.exe` - NSIS 安装程序 (x64)
@@ -168,13 +158,9 @@ npm run electron:build:linux:all
 
 ```bash
 # 1. 安装依赖
-cd webui-frontend
-npm install
-cd ..
 npm install
 
 # 2. 检查环境
-cd webui-frontend
 npm run electron:check
 
 # 3. 构建当前平台
@@ -188,4 +174,4 @@ ls -lh release/
 
 - [Electron Builder 文档](https://www.electron.build/)
 - [Electron 文档](https://www.electronjs.org/docs)
-- [项目文档](../docs/webui/ELECTRON_GUIDE.md)
+- [开发指南](./docs/DEVELOPMENT_GUIDE.md)

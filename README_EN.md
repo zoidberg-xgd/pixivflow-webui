@@ -39,29 +39,44 @@ Modern, responsive web interface for PixivFlow - A powerful Pixiv content downlo
 ## 📁 Project Structure
 
 ```
-webui-frontend/
+pixivflow-webui/
 ├── src/
 │   ├── components/          # Reusable React components
+│   │   ├── common/         # Common components
+│   │   ├── forms/          # Form components
+│   │   ├── tables/         # Table components
+│   │   ├── modals/         # Modal components
+│   │   ├── Layout/         # Layout components
 │   │   ├── ErrorBoundary.tsx
 │   │   ├── I18nProvider.tsx
-│   │   ├── Layout/
-│   │   │   └── AppLayout.tsx
 │   │   └── ProtectedRoute.tsx
 │   ├── pages/               # Page components
 │   │   ├── Dashboard.tsx    # Overview and statistics
-│   │   ├── Config.tsx       # Configuration management
-│   │   ├── Download.tsx     # Download management
-│   │   ├── History.tsx      # Download history
-│   │   ├── Files.tsx        # File browser
-│   │   ├── Logs.tsx         # Application logs
-│   │   └── Login.tsx        # Authentication
+│   │   ├── Config/          # Configuration management
+│   │   ├── Download/        # Download management
+│   │   ├── History/         # Download history
+│   │   ├── Files/           # File browser
+│   │   ├── Logs/            # Application logs
+│   │   └── Login/           # Authentication
 │   ├── services/            # API services
-│   │   └── api.ts           # API client and endpoints
+│   │   ├── api/            # API modules
+│   │   ├── authService.ts
+│   │   ├── configService.ts
+│   │   ├── downloadService.ts
+│   │   ├── fileService.ts
+│   │   ├── logsService.ts
+│   │   └── statsService.ts
 │   ├── hooks/               # Custom React hooks
+│   │   ├── useAuth.ts
+│   │   ├── useConfig.ts
+│   │   ├── useDownload.ts
+│   │   ├── useFiles.ts
 │   │   ├── useDebounce.ts
 │   │   ├── useLocalStorage.ts
-│   │   ├── usePagination.ts
-│   │   └── useTableSort.ts
+│   │   └── usePagination.ts
+│   ├── stores/             # State management
+│   │   ├── authStore.ts
+│   │   └── uiStore.ts
 │   ├── utils/               # Utility functions
 │   │   ├── dateUtils.ts
 │   │   ├── errorCodeTranslator.ts
@@ -70,19 +85,28 @@ webui-frontend/
 │   ├── constants/           # Application constants
 │   │   ├── theme.ts
 │   │   └── index.ts
+│   ├── types/               # TypeScript type definitions
+│   │   ├── api.ts
+│   │   └── errors.ts
 │   ├── locales/             # i18n translations
 │   │   ├── zh-CN.json
 │   │   └── en-US.json
 │   ├── i18n/                # i18n configuration
 │   │   └── config.ts
+│   ├── __tests__/           # Test files
 │   ├── App.tsx              # Root component
+│   ├── AppRoutes.tsx        # Route configuration
 │   ├── main.tsx             # Application entry point
 │   └── index.css            # Global styles
+├── electron/                # Electron main process code
+├── e2e/                     # End-to-end tests
+├── docs/                    # Documentation
 ├── public/                  # Static assets
 ├── check-translations.js    # Translation completeness checker
 ├── package.json
 ├── tsconfig.json
 ├── vite.config.ts
+├── playwright.config.ts     # Playwright configuration
 └── README.md
 ```
 
@@ -98,7 +122,7 @@ webui-frontend/
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd PixivBatchDownloader-master/webui-frontend
+cd pixivflow-webui
 ```
 
 2. Install dependencies:
@@ -113,40 +137,26 @@ npm run dev
 
 4. Open your browser and navigate to `http://localhost:5173`
 
-For more detailed instructions, see [Quick Start Guide](./docs/getting-started/QUICKSTART.md).
+For more development information, see [Development Guide](./docs/DEVELOPMENT_GUIDE.md).
 
 ## 📚 Documentation
 
 Comprehensive documentation is available in the [`docs/`](./docs/) directory:
 
-### 📖 Getting Started
+### 📖 Development
 
-- [Quick Start Guide](./docs/getting-started/QUICKSTART.md) - Get up and running quickly
-
-### 🛠️ Guides
-
-- [Packaged App Guide](./docs/guides/PACKAGED_APP_GUIDE.md) - Using the packaged application
+- [Development Guide](./docs/DEVELOPMENT_GUIDE.md) - Development environment setup and workflow
+- [Component Guide](./docs/COMPONENT_GUIDE.md) - Component usage guide
+- [E2E Testing Guide](./docs/E2E_TESTING_GUIDE.md) - End-to-end testing guide
+- [Performance Guide](./docs/PERFORMANCE_GUIDE.md) - Performance optimization strategies
 
 ### 🏗️ Building
 
-- [Build Guide](./docs/build/BUILD_GUIDE.md) - Complete build instructions
-- [Build Scripts](./docs/build/BUILD_README.md) - Build script documentation
-- [Build and Release](./docs/build/BUILD_RELEASE.md) - Release process
-- [Build Tools](./docs/build/BUILD_TOOLS.md) - Build tools reference
-
-### 💻 Development
-
-- [Development Guide](./docs/development/DEVELOPMENT.md) - Development setup and workflow
-
-### 📦 Project
-
-- [Changelog](./docs/project/CHANGELOG.md) - Version history and changes
-
-For the complete documentation index, see [Documentation README](./docs/README.md).
+- [Build Guide](./BUILD_GUIDE.md) - Electron app build instructions
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see the [Development Guide](./docs/development/DEVELOPMENT.md) for detailed information on:
+We welcome contributions! Please see the [Development Guide](./docs/DEVELOPMENT_GUIDE.md) for detailed information on:
 
 - Development environment setup
 - Code style and conventions

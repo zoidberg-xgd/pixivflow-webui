@@ -45,29 +45,44 @@ PixivFlow 的现代化、响应式 Web 界面 - 强大的 Pixiv 内容下载器�
 ## 📁 项目结构 (Project Structure)
 
 ```
-webui-frontend/
+pixivflow-webui/
 ├── src/
 │   ├── components/          # 可复用的 React 组件 (Reusable React components)
+│   │   ├── common/         # 通用组件 (Common components)
+│   │   ├── forms/          # 表单组件 (Form components)
+│   │   ├── tables/         # 表格组件 (Table components)
+│   │   ├── modals/         # 模态框组件 (Modal components)
+│   │   ├── Layout/         # 布局组件 (Layout components)
 │   │   ├── ErrorBoundary.tsx
 │   │   ├── I18nProvider.tsx
-│   │   ├── Layout/
-│   │   │   └── AppLayout.tsx
 │   │   └── ProtectedRoute.tsx
 │   ├── pages/               # 页面组件 (Page components)
 │   │   ├── Dashboard.tsx    # 概览和统计 (Overview and statistics)
-│   │   ├── Config.tsx       # 配置管理 (Configuration management)
-│   │   ├── Download.tsx     # 下载管理 (Download management)
-│   │   ├── History.tsx      # 下载历史 (Download history)
-│   │   ├── Files.tsx        # 文件浏览 (File browser)
-│   │   ├── Logs.tsx         # 应用日志 (Application logs)
-│   │   └── Login.tsx        # 身份认证 (Authentication)
+│   │   ├── Config/          # 配置管理 (Configuration management)
+│   │   ├── Download/        # 下载管理 (Download management)
+│   │   ├── History/         # 下载历史 (Download history)
+│   │   ├── Files/           # 文件浏览 (File browser)
+│   │   ├── Logs/            # 应用日志 (Application logs)
+│   │   └── Login/           # 身份认证 (Authentication)
 │   ├── services/            # API 服务 (API services)
-│   │   └── api.ts           # API 客户端和端点 (API client and endpoints)
+│   │   ├── api/            # API 模块 (API modules)
+│   │   ├── authService.ts
+│   │   ├── configService.ts
+│   │   ├── downloadService.ts
+│   │   ├── fileService.ts
+│   │   ├── logsService.ts
+│   │   └── statsService.ts
 │   ├── hooks/               # 自定义 React Hooks (Custom React hooks)
+│   │   ├── useAuth.ts
+│   │   ├── useConfig.ts
+│   │   ├── useDownload.ts
+│   │   ├── useFiles.ts
 │   │   ├── useDebounce.ts
 │   │   ├── useLocalStorage.ts
-│   │   ├── usePagination.ts
-│   │   └── useTableSort.ts
+│   │   └── usePagination.ts
+│   ├── stores/             # 状态管理 (State management)
+│   │   ├── authStore.ts
+│   │   └── uiStore.ts
 │   ├── utils/               # 工具函数 (Utility functions)
 │   │   ├── dateUtils.ts
 │   │   ├── errorCodeTranslator.ts
@@ -76,19 +91,28 @@ webui-frontend/
 │   ├── constants/           # 应用常量 (Application constants)
 │   │   ├── theme.ts
 │   │   └── index.ts
+│   ├── types/               # TypeScript 类型定义 (TypeScript types)
+│   │   ├── api.ts
+│   │   └── errors.ts
 │   ├── locales/             # i18n 翻译文件 (i18n translations)
 │   │   ├── zh-CN.json
 │   │   └── en-US.json
 │   ├── i18n/                # i18n 配置 (i18n configuration)
 │   │   └── config.ts
+│   ├── __tests__/           # 测试文件 (Test files)
 │   ├── App.tsx              # 根组件 (Root component)
+│   ├── AppRoutes.tsx        # 路由配置 (Route configuration)
 │   ├── main.tsx             # 应用入口点 (Application entry point)
 │   └── index.css            # 全局样式 (Global styles)
+├── electron/                # Electron 主进程代码 (Electron main process)
+├── e2e/                     # E2E 测试 (End-to-end tests)
+├── docs/                    # 文档 (Documentation)
 ├── public/                  # 静态资源 (Static assets)
 ├── check-translations.js    # 翻译完整性检查工具 (Translation completeness checker)
 ├── package.json
 ├── tsconfig.json
 ├── vite.config.ts
+├── playwright.config.ts     # Playwright 配置 (Playwright configuration)
 └── README.md
 ```
 
@@ -105,7 +129,7 @@ webui-frontend/
 1. 克隆仓库 (Clone the repository):
 ```bash
 git clone <repository-url>
-cd pixivflow-webui-frontend  # 或你的仓库名称
+cd pixivflow-webui
 ```
 
 2. 安装依赖 (Install dependencies):
@@ -140,44 +164,29 @@ The frontend communicates with the backend via HTTP API. By default:
 - Development mode: Connects to `http://localhost:3001` (configurable via `VITE_DEV_API_PORT` env var)
 - Production mode: Connects to current domain (configurable via `VITE_API_URL` env var)
 
-更详细的说明，请参阅 [快速开始指南](./docs/getting-started/QUICKSTART.md)。  
-For more detailed instructions, see [Quick Start Guide](./docs/getting-started/QUICKSTART.md).
+更多开发相关的信息，请参阅 [开发指南](./docs/DEVELOPMENT_GUIDE.md)。  
+For more development information, see [Development Guide](./docs/DEVELOPMENT_GUIDE.md).
 
 ## 📚 文档 (Documentation)
 
 完整的文档位于 [`docs/`](./docs/) 目录：  
 Comprehensive documentation is available in the [`docs/`](./docs/) directory:
 
-### 📖 快速开始 (Getting Started)
+### 📖 开发文档 (Development)
 
-- [快速开始指南](./docs/getting-started/QUICKSTART.md) - 快速上手 (Get up and running quickly)
-
-### 🛠️ 使用指南 (Guides)
-
-- [打包应用使用指南](./docs/guides/PACKAGED_APP_GUIDE.md) - 如何使用打包后的应用 (Using the packaged application)
+- [开发指南](./docs/DEVELOPMENT_GUIDE.md) - 开发环境设置和工作流程 (Development setup and workflow)
+- [组件使用指南](./docs/COMPONENT_GUIDE.md) - 通用组件使用方法 (Component usage guide)
+- [E2E 测试指南](./docs/E2E_TESTING_GUIDE.md) - 端到端测试指南 (End-to-end testing guide)
+- [性能优化指南](./docs/PERFORMANCE_GUIDE.md) - 性能优化策略 (Performance optimization guide)
 
 ### 🏗️ 构建文档 (Building)
 
-- [构建指南](./docs/build/BUILD_GUIDE.md) - 完整的构建说明 (Complete build instructions)
-- [构建脚本](./docs/build/BUILD_README.md) - 构建脚本文档 (Build script documentation)
-- [构建和发布](./docs/build/BUILD_RELEASE.md) - 发布流程 (Release process)
-- [构建工具](./docs/build/BUILD_TOOLS.md) - 构建工具参考 (Build tools reference)
-
-### 💻 开发文档 (Development)
-
-- [开发指南](./docs/development/DEVELOPMENT.md) - 开发环境设置和工作流程 (Development setup and workflow)
-
-### 📦 项目文档 (Project)
-
-- [更新日志](./docs/project/CHANGELOG.md) - 版本历史和变更 (Version history and changes)
-
-完整的文档索引，请参阅 [文档 README](./docs/README.md)。  
-For the complete documentation index, see [Documentation README](./docs/README.md).
+- [构建指南](./BUILD_GUIDE.md) - Electron 应用构建说明 (Electron app build instructions)
 
 ## 🤝 贡献指南 (Contributing)
 
-我们欢迎贡献！请参阅 [开发指南](./docs/development/DEVELOPMENT.md) 了解详细信息：  
-We welcome contributions! Please see the [Development Guide](./docs/development/DEVELOPMENT.md) for detailed information on:
+我们欢迎贡献！请参阅 [开发指南](./docs/DEVELOPMENT_GUIDE.md) 了解详细信息：  
+We welcome contributions! Please see the [Development Guide](./docs/DEVELOPMENT_GUIDE.md) for detailed information on:
 
 - 开发环境设置 (Development environment setup)
 - 代码风格和约定 (Code style and conventions)
