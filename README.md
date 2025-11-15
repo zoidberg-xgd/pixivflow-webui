@@ -2,11 +2,11 @@
 
 PixivFlow 的现代化、响应式 Web 界面 - 强大的 Pixiv 内容下载器。
 
-> 📖 **English Version**: See [README_EN.md](./README_EN.md) for the English translation.
+> **English Version**: See [README_EN.md](./README_EN.md) for the English translation.
 
 **独立前端项目**：这是一个独立的前端项目，与后端完全分离。后端 API 服务器是独立的 npm 包，可以通过 HTTP API 与前端通信。
 
-## 📋 目录
+## 目录
 
 - [功能特性](#功能特性)
 - [技术栈](#技术栈)
@@ -15,7 +15,7 @@ PixivFlow 的现代化、响应式 Web 界面 - 强大的 Pixiv 内容下载器�
 - [项目结构](#项目结构)
 - [贡献指南](#贡献指南)
 
-## ✨ 功能特性
+## 功能特性
 
 - **现代化 UI**：基于 Ant Design 构建的简洁直观界面
 - **国际化支持**：完整支持英文和中文
@@ -26,7 +26,7 @@ PixivFlow 的现代化、响应式 Web 界面 - 强大的 Pixiv 内容下载器�
 - **类型安全**：完整的 TypeScript 支持，提供更好的开发体验
 - **无障碍访问**：符合 WCAG 2.1 无障碍标准
 
-## 🛠 技术栈
+## 技术栈
 
 - **React 18** - UI 库
 - **TypeScript** - 类型安全的 JavaScript
@@ -38,7 +38,7 @@ PixivFlow 的现代化、响应式 Web 界面 - 强大的 Pixiv 内容下载器�
 - **Vite** - 构建工具和开发服务器
 - **Socket.IO** - 实时通信
 
-## 📁 项目结构
+## 项目结构
 
 ```
 pixivflow-webui/
@@ -112,7 +112,7 @@ pixivflow-webui/
 └── README.md
 ```
 
-## 🚀 快速开始
+## 快速开始
 
 ### 前置要求
 
@@ -155,22 +155,22 @@ npm run build
 
 更多开发相关的信息，请参阅 [开发指南](./docs/DEVELOPMENT_GUIDE.md)。
 
-## 📚 文档
+## 文档
 
 完整的文档位于 [`docs/`](./docs/) 目录：
 
-### 📖 开发文档
+### 开发文档
 
 - [开发指南](./docs/DEVELOPMENT_GUIDE.md) - 开发环境设置和工作流程
 - [组件使用指南](./docs/COMPONENT_GUIDE.md) - 通用组件使用方法
 - [E2E 测试指南](./docs/E2E_TESTING_GUIDE.md) - 端到端测试指南
 - [性能优化指南](./docs/PERFORMANCE_GUIDE.md) - 性能优化策略
 
-### 🏗️ 构建文档
+### 构建文档
 
 - [构建指南](./BUILD_GUIDE.md) - Electron 应用构建说明
 
-## 🤝 贡献指南
+## 贡献指南
 
 我们欢迎贡献！请参阅 [开发指南](./docs/DEVELOPMENT_GUIDE.md) 了解详细信息：
 
@@ -180,18 +180,18 @@ npm run build
 - 测试指南
 - 提交 Pull Request
 
-## 📝 许可证
+## 许可证
 
 本项目采用 MIT 许可证。详细信息请参阅项目根目录的 LICENSE 文件（如果存在）。
 
-## 🙏 致谢
+## 致谢
 
 - [Ant Design](https://ant.design/) - UI 组件库
 - [React Query](https://tanstack.com/query) - 数据获取和缓存
 - [i18next](https://www.i18next.com/) - 国际化框架
 - [Vite](https://vitejs.dev/) - 构建工具
 
-## 📧 支持
+## 支持
 
 遇到问题或需要帮助：
 
@@ -201,4 +201,4 @@ npm run build
 
 ---
 
-用 ❤️ 构建
+用爱构建

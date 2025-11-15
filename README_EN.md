@@ -2,9 +2,9 @@
 
 Modern, responsive web interface for PixivFlow - A powerful Pixiv content downloader.
 
-> 📖 **中文版本**: 查看 [README.md](./README.md) 获取中文文档。
+> **中文版本**: 查看 [README.md](./README.md) 获取中文文档。
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
@@ -13,18 +13,18 @@ Modern, responsive web interface for PixivFlow - A powerful Pixiv content downlo
 - [Project Structure](#project-structure)
 - [Contributing](#contributing)
 
-## ✨ Features
+## Features
 
-- **🎨 Modern UI**: Clean, intuitive interface built with Ant Design
-- **🌍 Internationalization**: Full support for English and Chinese
-- **📱 Responsive**: Works seamlessly on desktop, tablet, and mobile devices
-- **⚡ Real-time Updates**: Live download progress and status updates
-- **🔍 Advanced Search**: Powerful filtering and search capabilities
-- **📊 Statistics**: Comprehensive download statistics and analytics
-- **🎯 Type-Safe**: Full TypeScript support for better developer experience
-- **♿ Accessible**: WCAG 2.1 compliant for accessibility
+- **Modern UI**: Clean, intuitive interface built with Ant Design
+- **Internationalization**: Full support for English and Chinese
+- **Responsive**: Works seamlessly on desktop, tablet, and mobile devices
+- **Real-time Updates**: Live download progress and status updates
+- **Advanced Search**: Powerful filtering and search capabilities
+- **Statistics**: Comprehensive download statistics and analytics
+- **Type-Safe**: Full TypeScript support for better developer experience
+- **Accessible**: WCAG 2.1 compliant for accessibility
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **React 18** - UI library
 - **TypeScript** - Type-safe JavaScript
@@ -36,7 +36,7 @@ Modern, responsive web interface for PixivFlow - A powerful Pixiv content downlo
 - **Vite** - Build tool and dev server
 - **Socket.IO** - Real-time communication
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 pixivflow-webui/
@@ -110,7 +110,7 @@ pixivflow-webui/
 └── README.md
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -139,22 +139,22 @@ npm run dev
 
 For more development information, see [Development Guide](./docs/DEVELOPMENT_GUIDE.md).
 
-## 📚 Documentation
+## Documentation
 
 Comprehensive documentation is available in the [`docs/`](./docs/) directory:
 
-### 📖 Development
+### Development
 
 - [Development Guide](./docs/DEVELOPMENT_GUIDE.md) - Development environment setup and workflow
 - [Component Guide](./docs/COMPONENT_GUIDE.md) - Component usage guide
 - [E2E Testing Guide](./docs/E2E_TESTING_GUIDE.md) - End-to-end testing guide
 - [Performance Guide](./docs/PERFORMANCE_GUIDE.md) - Performance optimization strategies
 
-### 🏗️ Building
+### Building
 
 - [Build Guide](./BUILD_GUIDE.md) - Electron app build instructions
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see the [Development Guide](./docs/DEVELOPMENT_GUIDE.md) for detailed information on:
 
@@ -164,18 +164,18 @@ We welcome contributions! Please see the [Development Guide](./docs/DEVELOPMENT_
 - Testing guidelines
 - Submitting pull requests
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License. See the LICENSE file in the root directory for details (if available).
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Ant Design](https://ant.design/) - UI component library
 - [React Query](https://tanstack.com/query) - Data fetching and caching
 - [i18next](https://www.i18next.com/) - Internationalization framework
 - [Vite](https://vitejs.dev/) - Build tool
 
-## 📧 Support
+## Support
 
 For issues and questions:
 
@@ -185,5 +185,5 @@ For issues and questions:
 
 ---
 
-Built with ❤️
+Built with love
 
