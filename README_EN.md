@@ -41,73 +41,18 @@ Modern, responsive web interface for PixivFlow - A powerful Pixiv content downlo
 ```
 pixivflow-webui/
 ├── src/
-│   ├── components/          # Reusable React components
-│   │   ├── common/         # Common components
-│   │   ├── forms/          # Form components
-│   │   ├── tables/         # Table components
-│   │   ├── modals/         # Modal components
-│   │   ├── Layout/         # Layout components
-│   │   ├── ErrorBoundary.tsx
-│   │   ├── I18nProvider.tsx
-│   │   └── ProtectedRoute.tsx
-│   ├── pages/               # Page components
-│   │   ├── Dashboard.tsx    # Overview and statistics
-│   │   ├── Config/          # Configuration management
-│   │   ├── Download/        # Download management
-│   │   ├── History/         # Download history
-│   │   ├── Files/           # File browser
-│   │   ├── Logs/            # Application logs
-│   │   └── Login/           # Authentication
-│   ├── services/            # API services
-│   │   ├── api/            # API modules
-│   │   ├── authService.ts
-│   │   ├── configService.ts
-│   │   ├── downloadService.ts
-│   │   ├── fileService.ts
-│   │   ├── logsService.ts
-│   │   └── statsService.ts
-│   ├── hooks/               # Custom React hooks
-│   │   ├── useAuth.ts
-│   │   ├── useConfig.ts
-│   │   ├── useDownload.ts
-│   │   ├── useFiles.ts
-│   │   ├── useDebounce.ts
-│   │   ├── useLocalStorage.ts
-│   │   └── usePagination.ts
+│   ├── components/          # React components
+│   ├── pages/              # Page components
+│   ├── services/           # API services
+│   ├── hooks/              # Custom hooks
 │   ├── stores/             # State management
-│   │   ├── authStore.ts
-│   │   └── uiStore.ts
-│   ├── utils/               # Utility functions
-│   │   ├── dateUtils.ts
-│   │   ├── errorCodeTranslator.ts
-│   │   ├── formatters.ts
-│   │   └── validators.ts
-│   ├── constants/           # Application constants
-│   │   ├── theme.ts
-│   │   └── index.ts
-│   ├── types/               # TypeScript type definitions
-│   │   ├── api.ts
-│   │   └── errors.ts
-│   ├── locales/             # i18n translations
-│   │   ├── zh-CN.json
-│   │   └── en-US.json
-│   ├── i18n/                # i18n configuration
-│   │   └── config.ts
-│   ├── __tests__/           # Test files
-│   ├── App.tsx              # Root component
-│   ├── AppRoutes.tsx        # Route configuration
-│   ├── main.tsx             # Application entry point
-│   └── index.css            # Global styles
-├── electron/                # Electron main process code
-├── e2e/                     # End-to-end tests
-├── docs/                    # Documentation
-├── public/                  # Static assets
-├── check-translations.js    # Translation completeness checker
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-├── playwright.config.ts     # Playwright configuration
-└── README.md
+│   ├── utils/              # Utility functions
+│   ├── locales/            # i18n translations
+│   └── types/              # TypeScript types
+├── electron/               # Electron main process
+├── e2e/                    # E2E tests
+├── docs/                   # Documentation
+└── public/                 # Static assets
 ```
 
 ## Quick Start

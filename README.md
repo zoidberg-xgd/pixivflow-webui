@@ -43,73 +43,18 @@ PixivFlow 的现代化、响应式 Web 界面 - 强大的 Pixiv 内容下载器�
 ```
 pixivflow-webui/
 ├── src/
-│   ├── components/          # 可复用的 React 组件
-│   │   ├── common/         # 通用组件
-│   │   ├── forms/          # 表单组件
-│   │   ├── tables/         # 表格组件
-│   │   ├── modals/         # 模态框组件
-│   │   ├── Layout/         # 布局组件
-│   │   ├── ErrorBoundary.tsx
-│   │   ├── I18nProvider.tsx
-│   │   └── ProtectedRoute.tsx
-│   ├── pages/               # 页面组件
-│   │   ├── Dashboard.tsx    # 概览和统计
-│   │   ├── Config/          # 配置管理
-│   │   ├── Download/        # 下载管理
-│   │   ├── History/         # 下载历史
-│   │   ├── Files/           # 文件浏览
-│   │   ├── Logs/            # 应用日志
-│   │   └── Login/           # 身份认证
-│   ├── services/            # API 服务
-│   │   ├── api/            # API 模块
-│   │   ├── authService.ts
-│   │   ├── configService.ts
-│   │   ├── downloadService.ts
-│   │   ├── fileService.ts
-│   │   ├── logsService.ts
-│   │   └── statsService.ts
-│   ├── hooks/               # 自定义 React Hooks
-│   │   ├── useAuth.ts
-│   │   ├── useConfig.ts
-│   │   ├── useDownload.ts
-│   │   ├── useFiles.ts
-│   │   ├── useDebounce.ts
-│   │   ├── useLocalStorage.ts
-│   │   └── usePagination.ts
+│   ├── components/          # React 组件
+│   ├── pages/              # 页面组件
+│   ├── services/           # API 服务
+│   ├── hooks/              # 自定义 Hooks
 │   ├── stores/             # 状态管理
-│   │   ├── authStore.ts
-│   │   └── uiStore.ts
-│   ├── utils/               # 工具函数
-│   │   ├── dateUtils.ts
-│   │   ├── errorCodeTranslator.ts
-│   │   ├── formatters.ts
-│   │   └── validators.ts
-│   ├── constants/           # 应用常量
-│   │   ├── theme.ts
-│   │   └── index.ts
-│   ├── types/               # TypeScript 类型定义
-│   │   ├── api.ts
-│   │   └── errors.ts
-│   ├── locales/             # i18n 翻译文件
-│   │   ├── zh-CN.json
-│   │   └── en-US.json
-│   ├── i18n/                # i18n 配置
-│   │   └── config.ts
-│   ├── __tests__/           # 测试文件
-│   ├── App.tsx              # 根组件
-│   ├── AppRoutes.tsx        # 路由配置
-│   ├── main.tsx             # 应用入口点
-│   └── index.css            # 全局样式
-├── electron/                # Electron 主进程代码
-├── e2e/                     # E2E 测试
-├── docs/                    # 文档
-├── public/                  # 静态资源
-├── check-translations.js    # 翻译完整性检查工具
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-├── playwright.config.ts     # Playwright 配置
-└── README.md
+│   ├── utils/              # 工具函数
+│   ├── locales/            # 国际化翻译
+│   └── types/              # TypeScript 类型
+├── electron/               # Electron 主进程
+├── e2e/                    # E2E 测试
+├── docs/                   # 文档
+└── public/                 # 静态资源
 ```
 
 ## 快速开始
