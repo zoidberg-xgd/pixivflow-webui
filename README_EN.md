@@ -185,5 +185,3 @@ For issues and questions:
 
 ---
 
-Built with love
-
