@@ -71,6 +71,12 @@ dist-electron/
 *.bak
 .cache/
 
+# Config files (user-specific, should not be committed)
+config/standalone.config.json
+config/.current-config
+config/*.json
+!config/*.example.json
+
 # Lock files (optional - some projects prefer to commit these)
 # package-lock.json
 # yarn.lock
