@@ -194,6 +194,59 @@ if [ -f "package.json" ]; then
     fi
 fi
 
+# 7. 检查并安装 pixivflow 依赖
+print_info "检查 pixivflow 依赖..."
+PIXIVFLOW_PATH="node_modules/pixivflow"
+PIXIVFLOW_NODE_MODULES="$PIXIVFLOW_PATH/node_modules"
+
+if [ -d "$PIXIVFLOW_PATH" ]; then
+    # 检查 node_modules 是否存在且有内容
+    if [ ! -d "$PIXIVFLOW_NODE_MODULES" ] || [ -z "$(ls -A $PIXIVFLOW_NODE_MODULES 2>/dev/null)" ]; then
+        print_warning "pixivflow/node_modules 不存在或为空，需要安装依赖"
+        print_info "正在为 pixivflow 安装依赖..."
+        
+        if command -v npm &> /dev/null; then
+            (cd "$PIXIVFLOW_PATH" && npm install --production --no-save)
+            if [ $? -eq 0 ]; then
+                print_success "pixivflow 依赖安装成功"
+            else
+                print_error "pixivflow 依赖安装失败"
+                ERROR_COUNT=$((ERROR_COUNT + 1))
+            fi
+        else
+            print_error "npm 未找到，无法安装 pixivflow 依赖"
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+        fi
+    else
+        # 验证关键依赖是否存在
+        REQUIRED_DEPS=("node-cron" "express" "axios" "better-sqlite3")
+        MISSING_DEPS=()
+        
+        for dep in "${REQUIRED_DEPS[@]}"; do
+            if [ ! -d "$PIXIVFLOW_NODE_MODULES/$dep" ]; then
+                MISSING_DEPS+=("$dep")
+            fi
+        done
+        
+        if [ ${#MISSING_DEPS[@]} -eq 0 ]; then
+            print_success "pixivflow 依赖完整"
+        else
+            print_warning "pixivflow 缺少依赖: ${MISSING_DEPS[*]}"
+            print_info "正在重新安装 pixivflow 依赖..."
+            (cd "$PIXIVFLOW_PATH" && npm install --production --no-save)
+            if [ $? -eq 0 ]; then
+                print_success "pixivflow 依赖安装成功"
+            else
+                print_error "pixivflow 依赖安装失败"
+                ERROR_COUNT=$((ERROR_COUNT + 1))
+            fi
+        fi
+    fi
+else
+    print_error "pixivflow 目录不存在"
+    ERROR_COUNT=$((ERROR_COUNT + 1))
+fi
+
 # 总结
 print_section "检查结果"
 

@@ -309,18 +309,33 @@ class BackendService {
     }
 
     // 设置 NODE_PATH，让后端能找到它的依赖
-    // pixivflow 的 node_modules 在 pixivflow/node_modules 目录
+    // pixivflow 的依赖可能在多个位置：
+    // 1. pixivflow/node_modules（如果存在）
+    // 2. app.asar/node_modules（所有依赖都在这里）
     const nodePathParts = [];
     
     if (backendCwd) {
       // 优先使用 pixivflow 自己的 node_modules
       const pixivflowNodeModules = path.join(backendCwd, 'node_modules');
       if (fs.existsSync(pixivflowNodeModules)) {
-        nodePathParts.push(pixivflowNodeModules);
-        safeLog(`📦 使用 pixivflow node_modules: ${pixivflowNodeModules}`);
-      } else {
-        safeLog(`⚠️  pixivflow node_modules 不存在: ${pixivflowNodeModules}`);
+        const files = fs.readdirSync(pixivflowNodeModules);
+        if (files.length > 0) {
+          nodePathParts.push(pixivflowNodeModules);
+          safeLog(`📦 使用 pixivflow node_modules: ${pixivflowNodeModules}`);
+        }
       }
+    }
+    
+    // 重要：添加 app.asar 中的 node_modules
+    // 在 Electron 中，app.asar 中的文件可以直接访问
+    // 路径格式：/path/to/app.asar/node_modules
+    const asarNodeModules = path.join(resourcesPath, '..', 'app.asar', 'node_modules');
+    // 检查 asar 文件是否存在
+    const asarFile = path.join(resourcesPath, '..', 'app.asar');
+    if (fs.existsSync(asarFile)) {
+      // 在 Electron 中，可以直接使用 app.asar 路径
+      nodePathParts.push(asarNodeModules);
+      safeLog(`📦 使用 app.asar node_modules: ${asarNodeModules}`);
     }
     
     // 添加系统 NODE_PATH
