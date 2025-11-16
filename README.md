@@ -11,6 +11,7 @@ PixivFlow 的现代化、响应式 Web 界面 - 强大的 Pixiv 内容下载器�
 - [功能特性](#功能特性)
 - [技术栈](#技术栈)
 - [快速开始](#快速开始)
+- [移动应用](#移动应用)
 - [文档](#文档)
 - [项目结构](#项目结构)
 - [贡献指南](#贡献指南)
@@ -18,6 +19,7 @@ PixivFlow 的现代化、响应式 Web 界面 - 强大的 Pixiv 内容下载器�
 ## 功能特性
 
 - **现代化 UI**：基于 Ant Design 构建的简洁直观界面
+- **URL 直接下载**：无需配置，通过 URL 或作品 ID 直接下载
 - **国际化支持**：完整支持英文和中文
 - **响应式设计**：在桌面、平板和移动设备上完美运行
 - **实时更新**：实时下载进度和状态更新
@@ -100,6 +102,73 @@ npm run build
 
 更多开发相关的信息，请参阅 [开发指南](./docs/DEVELOPMENT_GUIDE.md)。
 
+## 移动应用
+
+PixivFlow 支持构建为 Android 和 iOS 原生应用!
+
+### Android 应用方案
+
+#### 方案 1: 仅前端 APK (推荐)
+
+适合有固定服务器或局域网使用的场景。
+
+```bash
+# 使用自动化脚本 (macOS/Linux)
+./build-android.sh
+
+# 或使用 npm 脚本
+npm install
+npm run android:init      # 首次构建时
+npm run android:build:debug
+```
+
+- **APK 大小**: ~10MB
+- **需要**: 外部后端服务器
+- **适用**: 个人使用,局域网环境
+
+#### 方案 2: 全栈 APK (包含前后端)
+
+完全独立运行,无需外部服务器。
+
+```bash
+# 使用全栈构建脚本
+./build-android-fullstack.sh
+```
+
+- **APK 大小**: ~50MB
+- **需要**: 无,完全离线运行
+- **适用**: 完全移动端使用
+
+构建完成后,APK 文件位于项目根目录,可直接安装到 Android 设备。
+
+### iOS 应用
+
+```bash
+npm install
+npm run build
+npm run ios:sync
+npm run ios:open  # 在 Xcode 中打开
+```
+
+### 详细文档
+
+- 📱 [移动应用快速入门](./docs/MOBILE_QUICK_START.md) - 快速构建指南
+- 🤖 [Android 构建指南](./docs/ANDROID_BUILD_GUIDE.md) - 仅前端 APK 构建
+- 🚀 [Android 全栈指南](./docs/ANDROID_FULL_STACK_GUIDE.md) - 包含前后端的完整应用
+- 📖 [全栈应用使用说明](./docs/ANDROID_FULLSTACK_USAGE.md) - 使用和故障排除
+
+### 前置要求
+
+**Android:**
+- Node.js 18+
+- Java JDK 17+
+- Android Studio 和 Android SDK
+
+**iOS:**
+- macOS 系统
+- Xcode 14+
+- Apple 开发者账号 (用于真机测试和发布)
+
 ## 文档
 
 完整的文档位于 [`docs/`](./docs/) 目录：
@@ -114,6 +183,8 @@ npm run build
 ### 构建文档
 
 - [构建指南](./BUILD_GUIDE.md) - Electron 应用构建说明
+- [移动应用快速入门](./docs/MOBILE_QUICK_START.md) - Android/iOS 应用构建
+- [Android 构建指南](./docs/ANDROID_BUILD_GUIDE.md) - Android 详细构建说明
 
 ## 贡献指南
 

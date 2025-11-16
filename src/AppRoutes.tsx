@@ -8,6 +8,7 @@ import { LoadingSpinner } from './components/common/LoadingSpinner';
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Config = lazy(() => import('./pages/Config'));
 const Download = lazy(() => import('./pages/Download'));
+const UrlDownload = lazy(() => import('./pages/UrlDownload'));
 const History = lazy(() => import('./pages/History'));
 const Logs = lazy(() => import('./pages/Logs'));
 const Files = lazy(() => import('./pages/Files'));
@@ -52,6 +53,14 @@ export function AppRoutes() {
             element={
               <Suspense fallback={<LoadingSpinner />}>
                 <Download />
+              </Suspense>
+            }
+          />
+          <Route
+            path="url-download"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <UrlDownload />
               </Suspense>
             }
           />

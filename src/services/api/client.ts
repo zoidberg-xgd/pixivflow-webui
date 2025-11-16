@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { Capacitor } from '@capacitor/core';
 import { setupRequestInterceptor, setupResponseInterceptor } from './interceptors';
 
 /* eslint-disable no-var */
@@ -36,8 +37,23 @@ function getEnvVar(key: string): string | undefined {
  * API Base URL Configuration
  * Supports environment variable configuration for mobile/remote access
  * Example: VITE_API_BASE_URL=http://192.168.1.100:3000
+ * 
+ * On Android with embedded Node.js backend, uses localhost:3001
  */
 const getApiBaseURL = (): string => {
+  const platform = Capacitor.getPlatform();
+  
+  // On Android, check if we're using embedded backend
+  if (platform === 'android') {
+    // Check if nodejs-mobile is available (embedded backend)
+    const useEmbeddedBackend = getEnvVar('VITE_USE_EMBEDDED_BACKEND') !== 'false';
+    
+    if (useEmbeddedBackend) {
+      // Use local Node.js backend
+      return 'http://127.0.0.1:3001/api';
+    }
+  }
+  
   // Priority 1: Environment variable
   const apiBaseUrl = getEnvVar('VITE_API_BASE_URL');
   

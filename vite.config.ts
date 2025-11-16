@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 // https://vitejs.dev/config/
-const DEV_API_PORT = process.env.VITE_DEV_API_PORT || 3001;
+const DEV_API_PORT = process.env.VITE_DEV_API_PORT || 3000;
 
 export default defineConfig({
   plugins: [react()],

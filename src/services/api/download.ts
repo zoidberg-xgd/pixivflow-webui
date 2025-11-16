@@ -110,5 +110,47 @@ export const downloadApi = {
    */
   deleteAllIncompleteTasks: (): Promise<AxiosResponse<ApiResponse<{ deletedCount: number }>>> =>
     apiClient.delete('/download/incomplete'),
+
+  /**
+   * Download from Pixiv URL or ID
+   * @param url - Pixiv URL or work ID
+   */
+  downloadFromUrl: (url: string): Promise<AxiosResponse<ApiResponse<{
+    taskId: string;
+    workId: string;
+    workType: 'illustration' | 'novel';
+    message: string;
+  }>>> =>
+    apiClient.post('/download/url', { url }),
+
+  /**
+   * Download multiple URLs at once
+   * @param urls - Array of Pixiv URLs or work IDs
+   */
+  downloadFromBatchUrls: (urls: string[]): Promise<AxiosResponse<ApiResponse<{
+    taskId: string;
+    totalUrls: number;
+    validUrls: number;
+    invalidUrls: number;
+    targets: Array<{
+      url: string;
+      workId: string;
+      workType: 'illustration' | 'novel';
+    }>;
+    message: string;
+  }>>> =>
+    apiClient.post('/download/batch-url', { urls }),
+
+  /**
+   * Parse Pixiv URL without downloading (for preview)
+   * @param url - Pixiv URL or work ID
+   */
+  parseUrl: (url: string): Promise<AxiosResponse<ApiResponse<{
+    success: boolean;
+    workId: string;
+    workType: 'illustration' | 'novel';
+    originalUrl: string;
+  }>>> =>
+    apiClient.post('/download/parse-url', { url }),
 };
 

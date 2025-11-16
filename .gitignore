@@ -81,3 +81,22 @@ config/*.json
 # package-lock.json
 # yarn.lock
 
+# Android
+android/
+*.apk
+*.aab
+*.keystore
+android/keystore.properties
+android/app/release/
+android/app/build/
+android/.gradle/
+android/local.properties
+
+# iOS (additional)
+ios/App/Podfile.lock
+ios/App/Pods/
+ios/App/build/
+
+# Capacitor
+.capacitor/
+

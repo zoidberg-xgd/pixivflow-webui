@@ -3,6 +3,7 @@ import {
   DashboardOutlined,
   SettingOutlined,
   DownloadOutlined,
+  LinkOutlined,
   HistoryOutlined,
   FileTextOutlined,
   FolderOutlined,
@@ -40,6 +41,11 @@ export default function LayoutSider({ collapsed, onCollapse }: LayoutSiderProps)
       key: '/download',
       icon: <DownloadOutlined />,
       label: t('layout.download'),
+    },
+    {
+      key: '/url-download',
+      icon: <LinkOutlined />,
+      label: t('layout.urlDownload'),
     },
     {
       key: '/history',
