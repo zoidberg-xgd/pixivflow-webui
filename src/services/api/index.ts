@@ -72,6 +72,8 @@ export const api = {
   resumeDownload: downloadApi.resumeDownload,
   deleteIncompleteTask: downloadApi.deleteIncompleteTask,
   deleteAllIncompleteTasks: downloadApi.deleteAllIncompleteTasks,
+  deleteTaskHistory: downloadApi.deleteTaskHistory,
+  deleteAllTaskHistory: downloadApi.deleteAllTaskHistory,
 
   // Statistics
   getStatsOverview: statsApi.getStatsOverview,

@@ -152,5 +152,18 @@ export const downloadApi = {
     originalUrl: string;
   }>>> =>
     apiClient.post('/download/parse-url', { url }),
+
+  /**
+   * Delete a task history record
+   * @param taskId - Task ID to delete
+   */
+  deleteTaskHistory: (taskId: string): Promise<AxiosResponse<ApiResponse<{ success: boolean; message: string }>>> =>
+    apiClient.delete(`/download/history/${taskId}`),
+
+  /**
+   * Delete all task history records
+   */
+  deleteAllTaskHistory: (): Promise<AxiosResponse<ApiResponse<{ success: boolean; deletedCount: number; message: string }>>> =>
+    apiClient.delete('/download/history'),
 };
 

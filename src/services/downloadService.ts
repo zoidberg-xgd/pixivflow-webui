@@ -100,5 +100,21 @@ export const downloadService = {
     const response = await api.deleteAllIncompleteTasks();
     return response.data.data;
   },
+
+  /**
+   * Delete a task history record
+   */
+  async deleteTaskHistory(taskId: string) {
+    const response = await api.deleteTaskHistory(taskId);
+    return response.data.data;
+  },
+
+  /**
+   * Delete all task history records
+   */
+  async deleteAllTaskHistory() {
+    const response = await api.deleteAllTaskHistory();
+    return response.data.data;
+  },
 };
 

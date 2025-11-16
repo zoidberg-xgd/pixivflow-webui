@@ -1,14 +1,19 @@
-import React from 'react';
-import { Card, Table, Tag, Space, Typography, Spin } from 'antd';
+import React, { useState } from 'react';
+import { Card, Table, Tag, Space, Typography, Spin, Button, Popconfirm, message } from 'antd';
 import {
   InfoCircleOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
   StopOutlined,
+  DeleteOutlined,
+  ClearOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '../../../utils/dateUtils';
+import { downloadService } from '../../../services/downloadService';
+import { useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '../../../constants';
 
 const { Text } = Typography;
 
@@ -32,6 +37,39 @@ export const TaskHistoryTable: React.FC<TaskHistoryTableProps> = ({
   calculateDuration,
 }) => {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
+  const [isDeletingAll, setIsDeletingAll] = useState(false);
+
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      setDeletingTaskId(taskId);
+      await downloadService.deleteTaskHistory(taskId);
+      message.success(t('download.deleteTaskHistorySuccess'));
+      // 刷新任务状态
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DOWNLOAD_STATUS() });
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.data?.message || error?.message || t('download.deleteTaskHistoryFailed');
+      message.error(errorMessage);
+    } finally {
+      setDeletingTaskId(null);
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    try {
+      setIsDeletingAll(true);
+      const result = await downloadService.deleteAllTaskHistory();
+      message.success(t('download.deleteAllTaskHistorySuccess', { count: result.deletedCount }));
+      // 刷新任务状态
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DOWNLOAD_STATUS() });
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.data?.message || error?.message || t('download.deleteAllTaskHistoryFailed');
+      message.error(errorMessage);
+    } finally {
+      setIsDeletingAll(false);
+    }
+  };
 
   const getStatusTag = (status: string) => {
     const statusMap: Record<string, { color: string; icon: React.ReactNode; text: string }> = {
@@ -119,6 +157,33 @@ export const TaskHistoryTable: React.FC<TaskHistoryTableProps> = ({
           <Text type="secondary">-</Text>
         ),
     },
+    {
+      title: t('download.actions'),
+      key: 'actions',
+      width: 100,
+      fixed: 'right' as const,
+      render: (_: unknown, record: Task) => (
+        <Popconfirm
+          title={t('download.deleteTaskHistoryConfirm')}
+          description={t('download.deleteTaskHistoryConfirmDesc', { taskId: record.taskId.slice(0, 8) })}
+          onConfirm={() => handleDeleteTask(record.taskId)}
+          okText={t('common.confirm')}
+          cancelText={t('common.cancel')}
+          okButtonProps={{ danger: true }}
+        >
+          <Button
+            type="link"
+            danger
+            size="small"
+            icon={<DeleteOutlined />}
+            loading={deletingTaskId === record.taskId}
+            disabled={record.status === 'running'}
+          >
+            {t('common.delete')}
+          </Button>
+        </Popconfirm>
+      ),
+    },
   ];
 
   return (
@@ -128,6 +193,27 @@ export const TaskHistoryTable: React.FC<TaskHistoryTableProps> = ({
           <InfoCircleOutlined />
           <span>{t('download.taskHistory')}</span>
         </Space>
+      }
+      extra={
+        tasks && tasks.length > 0 ? (
+          <Popconfirm
+            title={t('download.deleteAllTaskHistoryConfirm')}
+            description={t('download.deleteAllTaskHistoryConfirmDesc', { count: tasks.length })}
+            onConfirm={handleDeleteAll}
+            okText={t('common.confirm')}
+            cancelText={t('common.cancel')}
+            okButtonProps={{ danger: true }}
+          >
+            <Button
+              danger
+              size="small"
+              icon={<ClearOutlined />}
+              loading={isDeletingAll}
+            >
+              {t('download.deleteAll')}
+            </Button>
+          </Popconfirm>
+        ) : null
       }
     >
       {isLoading ? (
