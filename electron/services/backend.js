@@ -132,8 +132,9 @@ class BackendService {
 
     try {
       if (!needsBuild) {
-        safeLog(`🚀 启动后端: node ${backendDistPath}`);
-        this.backendProcess = spawn('node', [backendDistPath], {
+        safeLog(`🚀 启动后端: node ${backendDistPath} webui`);
+        // 重要：传递 'webui' 命令以启动 WebUI 服务器
+        this.backendProcess = spawn('node', [backendDistPath, 'webui'], {
           cwd: projectRoot,
           shell: false,
           stdio: ['ignore', 'pipe', 'pipe'],
@@ -346,10 +347,8 @@ class BackendService {
     const nodePath = nodePathParts.length > 0 ? nodePathParts.join(path.delimiter) : undefined;
 
     // 设置环境变量
-    // 重要：使用 ELECTRON_RUN_AS_NODE 让 Electron 作为 Node.js 运行后端脚本
     const env = {
       ...process.env,
-      ELECTRON_RUN_AS_NODE: '1', // 关键：让 Electron 作为 Node.js 运行
       STATIC_PATH: staticPath,
       PIXIV_DOWNLOADER_CONFIG: appData.configPath,
       NODE_ENV: 'production',
@@ -375,17 +374,41 @@ class BackendService {
       return;
     }
     
-    safeLog(`🚀 启动后端进程: ${process.execPath} ${backendPath}`);
+    // 在生产环境中，直接使用 Electron 内置的 Node.js
+    // process.execPath 在打包后指向 Electron 可执行文件，它包含了 Node.js 运行时
+    // 这是最可靠的方式，因为我们知道 Electron 一定有 Node.js
+    const nodeExecutable = process.execPath;
+    
+    safeLog(`🚀 Node 路径: ${nodeExecutable}`);
+    safeLog(`🚀 启动后端进程: ${nodeExecutable} ${backendPath}`);
     safeLog(`📁 工作目录: ${backendCwd}`);
-    safeLog(`📁 ELECTRON_RUN_AS_NODE: ${env.ELECTRON_RUN_AS_NODE}`);
+    if (nodePath) {
+      safeLog(`📦 NODE_PATH: ${nodePath}`);
+    }
+
+    // 重要：确保 NODE_PATH 在环境变量中
+    // 这样 Node.js 才能正确解析模块
+    if (nodePath && !env.NODE_PATH) {
+      env.NODE_PATH = nodePath;
+    }
 
     try {
-      // 使用 process.execPath (Electron) 运行后端，但设置 ELECTRON_RUN_AS_NODE=1
-      // 这样 Electron 会作为 Node.js 运行，可以执行普通的 Node.js 脚本
-      this.backendProcess = spawn(process.execPath, [backendPath], {
+      // 使用 Electron 的 Node.js 运行后端
+      // 设置 ELECTRON_RUN_AS_NODE=1 让 Electron 以纯 Node.js 模式运行子进程
+      // 这样可以避免 Electron 特定的模块解析问题
+      env.ELECTRON_RUN_AS_NODE = '1';
+      
+      safeLog(`🔧 使用 ELECTRON_RUN_AS_NODE 模式启动后端`);
+      
+      // 注意：必须使用 shell: false，否则环境变量可能不会正确传递
+      // 重要：传递 'webui' 命令以启动 WebUI 服务器
+      this.backendProcess = spawn(nodeExecutable, [backendPath, 'webui'], {
         cwd: backendCwd,
         env: env,
         stdio: ['ignore', 'pipe', 'pipe'],
+        shell: false,
+        // 在 macOS 上，detached 可以让子进程独立运行
+        detached: false,
       });
 
       this.setupBackendProcessHandlers();
@@ -412,9 +435,12 @@ class BackendService {
       const startPatterns = [
         /WebUI server started on http:\/\/localhost:(\d+)/i,
         /Server started on http:\/\/localhost:(\d+)/i,
+        /Server started successfully on port (\d+)/i,
         /listening on port\s*(\d+)/i,
         /PORT:\s*(\d+)/i,
         /started on port\s*(\d+)/i,
+        /\[WebUI\]\s*PORT:\s*(\d+)/i,
+        /\[WebUI\]\s*Server started successfully on port (\d+)/i,
       ];
       
       for (const pattern of startPatterns) {
@@ -430,9 +456,14 @@ class BackendService {
             this.checkBackendReady((ready) => {
               if (ready) {
                 safeLog(`✅ 后端服务器启动成功，端口: ${this.actualBackendPort}`);
+                this.notifyBackendReady();
+              } else {
+                safeLog(`⚠️  后端服务器端口检测到，但健康检查未通过，继续等待...`);
+                // 继续定期检查
+                this.startPeriodicHealthCheck();
               }
             });
-          }, 1000);
+          }, 1500);
           break;
         }
       }

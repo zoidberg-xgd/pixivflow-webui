@@ -29,6 +29,7 @@ export function useInteractiveLogin({
   // Handle successful login
   const handleLoginSuccess = useCallback(async () => {
     stopPolling();
+    isInteractiveLoginActiveRef.current = false;
     
     // Show progress messages
     message.loading({ content: '✅ 登录成功，正在验证登录状态...', key: 'login-success', duration: 0 });
@@ -41,33 +42,42 @@ export function useInteractiveLogin({
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Wait for auth status to update before navigating
-    try {
-      const result = await refetchAuthStatus();
-      console.log('[InteractiveLogin] Auth status after invalidate:', result);
-      
-      message.destroy('login-success');
-      
-      // Verify authentication before navigating
-      if (isAuthenticated(result)) {
-        console.log('[InteractiveLogin] Authentication confirmed, navigating to dashboard...');
-        message.success('✅ 登录成功！正在跳转到 Dashboard...');
+    let authenticated = false;
+    const maxRetries = 3;
+    
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        const result = await refetchAuthStatus();
+        console.log(`[InteractiveLogin] Auth status check (attempt ${attempt + 1}/${maxRetries}):`, result);
         
-        await new Promise(resolve => setTimeout(resolve, 800));
-        window.location.href = '/dashboard';
-      } else {
-        console.warn('[InteractiveLogin] Auth status not confirmed, but attempting navigation anyway...');
-        message.warning('状态验证失败，但将尝试跳转...');
+        if (isAuthenticated(result)) {
+          authenticated = true;
+          console.log('[InteractiveLogin] Authentication confirmed');
+          break;
+        }
         
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        window.location.href = '/dashboard';
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      } catch (error) {
+        console.error(`[InteractiveLogin] Auth status check error (attempt ${attempt + 1}/${maxRetries}):`, error);
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
       }
-    } catch (error) {
-      console.error('[InteractiveLogin] Error checking auth status before navigation:', error);
-      message.destroy('login-success');
-      message.warning('状态检查出错，但将尝试跳转...');
+    }
+    
+    message.destroy('login-success');
+    
+    if (authenticated) {
+      console.log('[InteractiveLogin] Authentication confirmed, navigating to dashboard...');
+      message.success('✅ 登录成功！正在跳转到 Dashboard...', 2);
       
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 800));
       window.location.href = '/dashboard';
+    } else {
+      console.warn('[InteractiveLogin] Auth status not confirmed after retries');
+      message.warning('登录状态验证失败，请手动刷新页面或点击"检查登录状态"按钮', 4);
     }
     
     onLoginSuccess?.();
@@ -88,6 +98,7 @@ export function useInteractiveLogin({
       
       try {
         stopPolling();
+        isInteractiveLoginActiveRef.current = false;
         
         if (data.refreshToken) {
           console.log('[InteractiveLogin] RefreshToken received from Electron');
@@ -104,31 +115,32 @@ export function useInteractiveLogin({
           message.loading({ content: '✅ 登录成功，正在验证登录状态...', key: 'login-progress', duration: 0 });
         }
         
-        queryClient.invalidateQueries({ queryKey: ['authStatus'] });
-        queryClient.invalidateQueries({ queryKey: ['config'] });
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AUTH_STATUS });
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CONFIG });
         
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Check auth status multiple times with retries
+        // Check auth status with retries
         let authenticated = false;
+        const maxRetries = 3;
         
-        for (let attempt = 0; attempt < 5; attempt++) {
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
           try {
             const result = await refetchAuthStatus();
-            console.log(`[InteractiveLogin] Auth status check (attempt ${attempt + 1}/5):`, result);
+            console.log(`[InteractiveLogin] Auth status check (attempt ${attempt + 1}/${maxRetries}):`, result);
             
             if (isAuthenticated(result)) {
               authenticated = true;
               console.log('[InteractiveLogin] Authentication confirmed');
               break;
-            } else {
-              if (attempt < 4) {
-                await new Promise(resolve => setTimeout(resolve, 500));
-              }
+            }
+            
+            if (attempt < maxRetries - 1) {
+              await new Promise(resolve => setTimeout(resolve, 500));
             }
           } catch (error) {
-            console.error(`[InteractiveLogin] Auth status check error (attempt ${attempt + 1}/5):`, error);
-            if (attempt < 4) {
+            console.error(`[InteractiveLogin] Auth status check error (attempt ${attempt + 1}/${maxRetries}):`, error);
+            if (attempt < maxRetries - 1) {
               await new Promise(resolve => setTimeout(resolve, 500));
             }
           }
@@ -136,21 +148,28 @@ export function useInteractiveLogin({
         
         message.destroy('login-progress');
         
-        if (authenticated || data.refreshToken) {
-          console.log('[InteractiveLogin] Proceeding with login success (authenticated:', authenticated, ', hasToken:', !!data.refreshToken, ')');
-          message.success('✅ 登录成功！正在跳转到 Dashboard...');
+        if (authenticated) {
+          console.log('[InteractiveLogin] Authentication confirmed, navigating to dashboard...');
+          message.success('✅ 登录成功！正在跳转到 Dashboard...', 2);
           
           await new Promise(resolve => setTimeout(resolve, 800));
           window.location.href = '/dashboard';
+        } else if (data.refreshToken) {
+          // 如果有 token 但验证失败，仍然尝试跳转
+          console.warn('[InteractiveLogin] Has token but auth status not confirmed, attempting navigation...');
+          message.warning('登录状态验证失败，但将尝试跳转...', 3);
+          
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          window.location.href = '/dashboard';
         } else {
-          console.error('[InteractiveLogin] Authentication not confirmed after multiple attempts');
-          message.warning('登录成功，但状态验证失败。请手动刷新页面或点击"检查登录状态"按钮。');
+          console.error('[InteractiveLogin] Authentication not confirmed after retries');
+          message.warning('登录成功，但状态验证失败。请手动刷新页面或点击"检查登录状态"按钮。', 4);
         }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : '未知错误';
         console.error('[InteractiveLogin] Error handling login-success event:', error);
         message.destroy('login-progress');
-        message.error('处理登录成功事件时出错: ' + errorMessage);
+        message.error('处理登录成功事件时出错: ' + errorMessage, 4);
       }
     };
 
@@ -158,7 +177,10 @@ export function useInteractiveLogin({
     const handleElectronLoginError = (error: ElectronLoginError) => {
       console.error('[InteractiveLogin] Received login-error event from Electron:', error);
       stopPolling();
-      message.error('登录失败: ' + (error.message || '未知错误'));
+      isInteractiveLoginActiveRef.current = false;
+      
+      const errorMessage = error.message || '未知错误';
+      message.error('登录失败: ' + errorMessage, 4);
     };
 
     // Register event listeners
@@ -196,16 +218,18 @@ export function useInteractiveLogin({
           if (result.cancelled) {
             stopPolling();
             isInteractiveLoginActiveRef.current = false;
+            message.info('登录已取消', 2);
             return;
           }
           throw new Error(result.error || '无法打开登录窗口');
         }
         
         console.log('[InteractiveLogin] Login window opened, waiting for login-success or login-error event...');
+        message.info('请在浏览器中完成登录，系统会自动检测登录状态...', 5);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : '未知错误';
         console.error('[InteractiveLogin] Failed to open Electron login window:', error);
-        message.error('无法打开登录窗口: ' + errorMessage);
+        message.error('无法打开登录窗口: ' + errorMessage, 4);
         stopPolling();
         isInteractiveLoginActiveRef.current = false;
       }
@@ -234,13 +258,15 @@ export function useInteractiveLogin({
       
       if (isTimeout) {
         console.log('[InteractiveLogin] Interactive login API timeout, but continuing to poll for status...');
-        message.info('正在等待浏览器登录完成，系统会自动检测登录状态...');
+        message.info('正在等待浏览器登录完成，系统会自动检测登录状态...', 5);
         return;
       }
       
       stopPolling();
       isInteractiveLoginActiveRef.current = false;
-      throw error;
+      
+      const errorMessage = apiError?.message || (error instanceof Error ? error.message : '未知错误');
+      throw new Error(errorMessage);
     }
   }, [startPolling, stopPolling]);
 
@@ -252,9 +278,10 @@ export function useInteractiveLogin({
       message.destroy('checkStatus');
       
       if (isAuthenticated(result)) {
+        message.success('✅ 已登录，正在跳转...', 2);
         handleLoginSuccess();
       } else {
-        message.info('尚未登录，请完成浏览器中的登录流程。系统会自动检测登录状态。');
+        message.info('尚未登录，请完成浏览器中的登录流程。系统会自动检测登录状态。', 4);
         if (!isInteractiveLoginActiveRef.current) {
           isInteractiveLoginActiveRef.current = true;
           startPolling();
@@ -262,7 +289,8 @@ export function useInteractiveLogin({
       }
     } catch (error) {
       message.destroy('checkStatus');
-      message.error('检查登录状态失败');
+      const errorMessage = error instanceof Error ? error.message : '未知错误';
+      message.error('检查登录状态失败: ' + errorMessage, 4);
       console.error('[InteractiveLogin] Manual status check error:', error);
     }
   }, [refetchAuthStatus, isAuthenticated, handleLoginSuccess, startPolling]);

@@ -59,34 +59,44 @@ export function useLoginFlow() {
     // Wait for backend config to refresh
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    try {
-      const result = await refetchAuthStatus();
-      console.log('[Login] Auth status after invalidate:', result);
-      
-      message.destroy('login-success');
-      
-      if (checkAuth(result)) {
-        console.log('[Login] Authentication confirmed, navigating to dashboard...');
-        message.success('✅ 登录成功！正在跳转到 Dashboard...');
+    let authenticated = false;
+    const maxRetries = 3;
+    
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        const result = await refetchAuthStatus();
+        console.log(`[Login] Auth status check (attempt ${attempt + 1}/${maxRetries}):`, result);
         
-        await new Promise(resolve => setTimeout(resolve, 800));
-        window.location.href = '/dashboard';
-      } else {
-        console.warn('[Login] Auth status not confirmed, but attempting navigation anyway...');
-        message.warning('状态验证失败，但将尝试跳转...');
+        if (checkAuth(result)) {
+          authenticated = true;
+          console.log('[Login] Authentication confirmed');
+          break;
+        }
         
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        window.location.href = '/dashboard';
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      } catch (error) {
+        console.error(`[Login] Auth status check error (attempt ${attempt + 1}/${maxRetries}):`, error);
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
       }
-    } catch (error) {
-      console.error('[Login] Error checking auth status before navigation:', error);
-      message.destroy('login-success');
-      message.warning('状态检查出错，但将尝试跳转...');
-      
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      window.location.href = '/dashboard';
     }
-  }, [refetchAuthStatus, isAuthenticated]);
+    
+    message.destroy('login-success');
+    
+    if (authenticated) {
+      console.log('[Login] Authentication confirmed, navigating to dashboard...');
+      message.success('✅ 登录成功！正在跳转到 Dashboard...', 2);
+      
+      await new Promise(resolve => setTimeout(resolve, 800));
+      window.location.href = '/dashboard';
+    } else {
+      console.warn('[Login] Auth status not confirmed after retries');
+      message.warning('登录状态验证失败，请手动刷新页面或点击"检查登录状态"按钮', 4);
+    }
+  }, [refetchAuthStatus, checkAuth]);
 
   // Start/stop polling helpers
   const startPolling = useCallback(() => {

@@ -98,27 +98,33 @@ export function LoginForm({
             </span>
           }
           description={
-            <div style={{ fontSize: '13px' }}>
+            <div style={{ fontSize: '13px', lineHeight: '1.6' }}>
               {loginMode === 'interactive' ? (
                 <div>
-                  <div style={{ marginBottom: 8 }}>{t('login.processingInteractiveDesc')}</div>
+                  <div style={{ marginBottom: 12, color: 'rgba(0, 0, 0, 0.65)' }}>
+                    {t('login.processingInteractiveDesc')}
+                  </div>
                   {onCheckStatus && (
                     <div style={{ 
-                      padding: '8px 12px', 
-                      background: 'rgba(24, 144, 255, 0.1)', 
-                      borderRadius: '6px',
+                      padding: '12px', 
+                      background: 'rgba(24, 144, 255, 0.08)', 
+                      borderRadius: '8px',
                       borderLeft: '3px solid #1890ff',
-                      marginTop: 8,
+                      marginTop: 12,
                     }}>
-                      <div style={{ marginBottom: 8 }}>
-                        <strong>提示：</strong>如果您已经在浏览器中完成登录，请点击下方按钮检查登录状态。
+                      <div style={{ marginBottom: 10, color: 'rgba(0, 0, 0, 0.65)' }}>
+                        <strong style={{ color: '#1890ff' }}>💡 提示：</strong>如果您已经在浏览器中完成登录，请点击下方按钮检查登录状态。
                       </div>
                       <Button
                         type="primary"
                         size="small"
                         icon={<ReloadOutlined />}
                         onClick={onCheckStatus}
-                        style={{ width: '100%' }}
+                        style={{ 
+                          width: '100%',
+                          height: '32px',
+                          borderRadius: '6px',
+                        }}
                       >
                         检查登录状态
                       </Button>
@@ -126,13 +132,18 @@ export function LoginForm({
                   )}
                 </div>
               ) : loginMode === 'token' ? (
-                '正在验证 refreshToken 并保存到配置文件...'
+                <div style={{ color: 'rgba(0, 0, 0, 0.65)' }}>
+                  正在验证 refreshToken 并保存到配置文件...
+                </div>
               ) : null}
             </div>
           }
           type="info"
           showIcon
-          style={{ marginTop: 0 }}
+          style={{ 
+            marginTop: 0,
+            borderRadius: '8px',
+          }}
         />
       )}
     </Form>

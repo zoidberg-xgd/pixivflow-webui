@@ -1727,7 +1727,7 @@ function showAuthCodeInputDialog() {
  */
 // eslint-disable-next-line no-unused-vars
 function resetLoginWindowFlag() {
-  isOpeningLoginWindow = false;
+  authService.isOpeningLoginWindow = false;
   console.log('✅ 已重置登录窗口打开标志位');
 }
 
@@ -1895,7 +1895,7 @@ function setupIpcHandlers() {
   ipcMain.handle('open-login-window', async (event, options = {}) => {
     try {
       // 防止重复打开登录窗口
-      if (isOpeningLoginWindow) {
+      if (authService.isOpeningLoginWindow) {
         console.log('⚠️  登录窗口正在打开中，忽略重复请求');
         return { 
           success: false, 
@@ -1905,8 +1905,8 @@ function setupIpcHandlers() {
       }
       
       // 检查是否已有登录窗口或浏览器实例
-      const hasExistingWindow = loginWindow && !loginWindow.isDestroyed();
-      const hasExistingBrowser = puppeteerBrowser !== null;
+      const hasExistingWindow = authService.loginWindow && !authService.loginWindow.isDestroyed();
+      const hasExistingBrowser = authService.puppeteerBrowser !== null;
       
       if (hasExistingWindow || hasExistingBrowser) {
         console.log('⚠️  检测到已有登录窗口或浏览器实例，先关闭旧的');
@@ -1915,8 +1915,8 @@ function setupIpcHandlers() {
         }
         if (hasExistingBrowser) {
           try {
-            await puppeteerBrowser.close();
-            puppeteerBrowser = null;
+            await authService.puppeteerBrowser.close();
+            authService.puppeteerBrowser = null;
           } catch (error) {
             console.error('关闭 Puppeteer 浏览器时出错:', error);
           }
@@ -1924,7 +1924,7 @@ function setupIpcHandlers() {
       }
       
       // 设置标志位，防止重复调用
-      isOpeningLoginWindow = true;
+      authService.isOpeningLoginWindow = true;
       
       const useTokenGetter = options.useTokenGetter !== false && pixivTokenGetter !== null; // 默认优先使用 pixiv-token-getter（如果可用）
       const usePuppeteer = options.usePuppeteer !== false && puppeteer !== null; // 默认使用 Puppeteer（如果可用）
@@ -1977,6 +1977,7 @@ function setupIpcHandlers() {
                   mainWindow.webContents.send('login-success', eventData);
                   console.log('✅ login-success 事件已发送');
                   eventSent = true; // 标记为已发送
+                  resetLoginWindowFlag(); // 重置标志位
                   
                   // 如果事件发送成功，也可以尝试重新加载页面或导航到 dashboard
                   // 作为备选方案，等待 2 秒后检查是否需要手动导航
@@ -2195,6 +2196,7 @@ function setupIpcHandlers() {
                   mainWindow.webContents.send('login-success', eventData);
                   console.log('✅ login-success 事件已发送');
                   eventSent = true; // 标记为已发送
+                  resetLoginWindowFlag(); // 重置标志位
                   
                   // 如果事件发送成功，也可以尝试重新加载页面或导航到 dashboard
                   // 作为备选方案，等待 2 秒后检查是否需要手动导航
@@ -2286,15 +2288,15 @@ function setupIpcHandlers() {
   // 关闭登录窗口
   ipcMain.handle('close-login-window', async () => {
     // 关闭 BrowserWindow 登录窗口
-    if (loginWindow) {
+    if (authService.loginWindow) {
       closeLoginWindow();
     }
     
     // 关闭 Puppeteer 浏览器
-    if (puppeteerBrowser) {
+    if (authService.puppeteerBrowser) {
       try {
-        await puppeteerBrowser.close();
-        puppeteerBrowser = null;
+        await authService.puppeteerBrowser.close();
+        authService.puppeteerBrowser = null;
         console.log('✅ Puppeteer 浏览器已关闭');
       } catch (error) {
         console.error('❌ 关闭 Puppeteer 浏览器时出错:', error);
@@ -2305,7 +2307,7 @@ function setupIpcHandlers() {
     currentLoginCodeVerifier = null;
     isProcessingAuthCode = false;
     
-    if (loginWindow || puppeteerBrowser) {
+    if (authService.loginWindow || authService.puppeteerBrowser) {
       return { success: true };
     }
     return { success: false, error: '登录窗口不存在' };
