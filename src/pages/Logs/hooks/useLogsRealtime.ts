@@ -12,7 +12,7 @@ export function useLogsRealtime(enabled: boolean) {
 
   useEffect(() => {
     if (enabled) {
-      const apiUrl = import.meta.env.DEV ? `http://localhost:${import.meta.env.VITE_DEV_API_PORT || 3001}` : '';
+      const apiUrl = import.meta.env.DEV ? `http://localhost:${import.meta.env.VITE_DEV_API_PORT || 3000}` : '';
       const newSocket = io(apiUrl, {
         transports: ['websocket', 'polling'],
       });

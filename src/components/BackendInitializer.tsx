@@ -6,7 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Spin, Alert, Progress } from 'antd';
-import { nodejsBridge, BackendStatus } from '../services/nodejsBridge';
+import { nodejsBridge } from '../services/nodejsBridge';
 
 interface BackendInitializerProps {
   children: React.ReactNode;
@@ -133,7 +133,7 @@ export const BackendInitializer: React.FC<BackendInitializerProps> = ({
             <ul style={{ fontSize: '12px', paddingLeft: '20px' }}>
               <li>后端代码未正确打包</li>
               <li>Node.js 运行时初始化失败</li>
-              <li>端口 3001 被占用</li>
+              <li>端口 3000 被占用</li>
             </ul>
           </div>
         }

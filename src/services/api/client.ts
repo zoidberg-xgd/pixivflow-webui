@@ -38,7 +38,7 @@ function getEnvVar(key: string): string | undefined {
  * Supports environment variable configuration for mobile/remote access
  * Example: VITE_API_BASE_URL=http://192.168.1.100:3000
  * 
- * On Android with embedded Node.js backend, uses localhost:3001
+ * On Android with embedded Node.js backend, uses localhost:3000
  */
 const getApiBaseURL = (): string => {
   const platform = Capacitor.getPlatform();
@@ -50,7 +50,7 @@ const getApiBaseURL = (): string => {
     
     if (useEmbeddedBackend) {
       // Use local Node.js backend
-      return 'http://127.0.0.1:3001/api';
+      return 'http://127.0.0.1:3000/api';
     }
   }
   

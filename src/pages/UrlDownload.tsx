@@ -161,8 +161,7 @@ export const UrlDownload: React.FC = () => {
 
     setDownloading(true);
     try {
-      const response = await downloadApi.downloadFromUrl(singleUrl.trim());
-      const data = response.data.data;
+      await downloadApi.downloadFromUrl(singleUrl.trim());
 
       message.success(t('download.urlDownload.downloadStarted'));
       
@@ -270,7 +269,7 @@ export const UrlDownload: React.FC = () => {
                 {t('download.urlDownload.parseUrl')}
               </Button>
 
-              {parsedUrls.length === 1 && (
+              {parsedUrls.length === 1 && parsedUrls[0] && (
                 <Alert
                   message={
                     parsedUrls[0].valid
@@ -281,18 +280,18 @@ export const UrlDownload: React.FC = () => {
                     parsedUrls[0].valid ? (
                       <div>
                         <Text>
-                          {t('download.urlDownload.workId')}: <Tag>{parsedUrls[0].workId}</Tag>
+                          {t('download.urlDownload.workId')}: <Tag>{parsedUrls[0].workId || ''}</Tag>
                         </Text>
                         <br />
                         <Text>
                           {t('download.urlDownload.workType')}:{' '}
                           <Tag color={parsedUrls[0].workType === 'illustration' ? 'blue' : 'green'}>
-                            {t(`download.urlDownload.${parsedUrls[0].workType}`)}
+                            {t(`download.urlDownload.${parsedUrls[0].workType || 'illustration'}`)}
                           </Tag>
                         </Text>
                       </div>
                     ) : (
-                      <Text type="danger">{parsedUrls[0].error}</Text>
+                      <Text type="danger">{parsedUrls[0].error || ''}</Text>
                     )
                   }
                   type={parsedUrls[0].valid ? 'success' : 'error'}

@@ -15,7 +15,7 @@ export interface BackendStatus {
 export class NodeJSBridge {
   private static instance: NodeJSBridge;
   private backendReady = false;
-  private backendUrl = 'http://127.0.0.1:3001';
+  private backendUrl = 'http://127.0.0.1:3000';
   private initializationPromise: Promise<void> | null = null;
 
   private constructor() {}
@@ -57,7 +57,8 @@ export class NodeJSBridge {
     try {
       console.log('[NodeJSBridge] Starting Node.js backend...');
 
-      // 动态导入 nodejs-mobile-capacitor
+      // 动态导入 nodejs-mobile-capacitor（可选依赖，仅在Android上需要）
+      // @ts-ignore - 可选依赖，类型声明在 src/types/nodejs-mobile-capacitor.d.ts
       const { NodeJS } = await import('nodejs-mobile-capacitor');
       
       // 设置消息监听器
@@ -132,7 +133,7 @@ export class NodeJSBridge {
 
     // 开发模式
     if (import.meta.env.DEV) {
-      const port = import.meta.env.VITE_DEV_API_PORT || '3001';
+      const port = import.meta.env.VITE_DEV_API_PORT || '3000';
       return `http://localhost:${port}`;
     }
 
@@ -175,6 +176,7 @@ export class NodeJSBridge {
     }
 
     try {
+      // @ts-ignore - 可选依赖，类型声明在 src/types/nodejs-mobile-capacitor.d.ts
       const { NodeJS } = await import('nodejs-mobile-capacitor');
       NodeJS.channel.send(message);
     } catch (error) {
