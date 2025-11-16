@@ -12,6 +12,13 @@ export interface BackendStatus {
   error?: string;
 }
 
+// Node.js 消息类型定义
+export interface NodeJSMessage {
+  type?: string;
+  data?: unknown;
+  [key: string]: unknown;
+}
+
 export class NodeJSBridge {
   private static instance: NodeJSBridge;
   private backendReady = false;
@@ -62,10 +69,10 @@ export class NodeJSBridge {
       const { NodeJS } = await import('nodejs-mobile-capacitor');
       
       // 设置消息监听器
-      NodeJS.channel.addListener('message', (msg: any) => {
+      NodeJS.channel.addListener('message', (msg: string | NodeJSMessage) => {
         console.log('[NodeJSBridge] Message from backend:', msg);
         
-        if (msg === 'backend-ready' || msg.type === 'ready') {
+        if (msg === 'backend-ready' || (typeof msg === 'object' && msg.type === 'ready')) {
           this.backendReady = true;
           console.log('[NodeJSBridge] Backend is ready!');
         }
@@ -169,7 +176,7 @@ export class NodeJSBridge {
   /**
    * 向后端发送消息 (仅 Android)
    */
-  async sendMessage(message: any): Promise<void> {
+  async sendMessage(message: string | NodeJSMessage): Promise<void> {
     if (Capacitor.getPlatform() !== 'android') {
       console.warn('[NodeJSBridge] sendMessage only works on Android');
       return;

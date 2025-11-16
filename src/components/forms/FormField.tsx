@@ -74,7 +74,7 @@ export interface FormFieldProps extends Omit<FormItemProps, 'children'> {
   /**
    * Additional props passed to the underlying input component
    */
-  inputProps?: Record<string, any>;
+  inputProps?: Record<string, unknown>;
 }
 
 /**

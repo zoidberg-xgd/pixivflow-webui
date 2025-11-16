@@ -9,7 +9,7 @@ test.describe('Authentication', () => {
   test.beforeEach(async ({ page, request, context }) => {
     // Clear authentication state before each test
     // Step 1: Check auth status before logout
-    let authStatusBefore: any = null;
+    let authStatusBefore: { data?: { authenticated?: boolean; hasToken?: boolean; tokenValid?: boolean } } | null = null;
     try {
       const authStatusResponseBefore = await request.get('http://localhost:3000/api/auth/status');
       if (authStatusResponseBefore.ok()) {

@@ -42,6 +42,16 @@ interface ParsedUrl {
   error?: string;
 }
 
+// API 错误响应类型
+interface ApiErrorResponse {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+  message?: string;
+}
+
 export const UrlDownload: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -84,13 +94,15 @@ export const UrlDownload: React.FC = () => {
           },
         ]);
       }
-    } catch (error: any) {
-      message.error(error.response?.data?.message || t('download.urlDownload.parseError'));
+    } catch (error) {
+      const apiError = error as ApiErrorResponse;
+      const errorMessage = apiError.response?.data?.message || apiError.message || t('download.urlDownload.parseError');
+      message.error(errorMessage);
       setParsedUrls([
         {
           url: singleUrl.trim(),
           valid: false,
-          error: error.response?.data?.message || t('download.urlDownload.parseError'),
+          error: errorMessage,
         },
       ]);
     } finally {
@@ -132,11 +144,12 @@ export const UrlDownload: React.FC = () => {
             error: t('download.urlDownload.invalidUrl'),
           });
         }
-      } catch (error: any) {
+      } catch (error) {
+        const apiError = error as ApiErrorResponse;
         results.push({
           url,
           valid: false,
-          error: error.response?.data?.message || t('download.urlDownload.parseError'),
+          error: apiError.response?.data?.message || apiError.message || t('download.urlDownload.parseError'),
         });
       }
     }
@@ -169,8 +182,9 @@ export const UrlDownload: React.FC = () => {
       setTimeout(() => {
         navigate('/download');
       }, 1000);
-    } catch (error: any) {
-      message.error(error.response?.data?.message || t('download.urlDownload.downloadError'));
+    } catch (error) {
+      const apiError = error as ApiErrorResponse;
+      message.error(apiError.response?.data?.message || apiError.message || t('download.urlDownload.downloadError'));
     } finally {
       setDownloading(false);
     }
@@ -200,8 +214,9 @@ export const UrlDownload: React.FC = () => {
       setTimeout(() => {
         navigate('/download');
       }, 1000);
-    } catch (error: any) {
-      message.error(error.response?.data?.message || t('download.urlDownload.downloadError'));
+    } catch (error) {
+      const apiError = error as ApiErrorResponse;
+      message.error(apiError.response?.data?.message || apiError.message || t('download.urlDownload.downloadError'));
     } finally {
       setDownloading(false);
     }

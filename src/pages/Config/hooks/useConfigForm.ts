@@ -99,7 +99,7 @@ export type ConfigFormTarget = {
   endDate?: ConfigTarget['endDate'];
   seriesId?: ConfigTarget['seriesId'];
   novelId?: ConfigTarget['novelId'];
-} & Record<string, any>;
+} & Record<string, unknown>;
 
 export type ConfigFormValues = Omit<ConfigData, '_meta' | '_validation' | 'targets'> & {
   targets?: ConfigFormTarget[];
