@@ -1,6 +1,7 @@
 appId: com.pixivflow.webui
 productName: PixivFlow
 copyright: Copyright © 2024
+executableName: PixivFlow
 
 publish: null
 
@@ -12,29 +13,39 @@ directories:
   buildResources: build
   output: release
 
+# files 配置：指定要打包的文件
+# electron-builder 默认会包含 package.json 和 main 字段指定的文件
+# 这里明确指定需要包含的文件和目录
 files:
-  - "package.json"
-  - "electron/**/*"
-  - "dist/**/*"
+  - package.json
+  - electron/**/*
+  - dist/**/*
   - "!electron/**/*.{ts,map}"
   - "!dist/**/*.map"
+  - "!src/**/*"
+  - "!**/.git/**/*"
+  - "!**/.DS_Store"
+  # 注意：不要排除所有 node_modules，因为某些依赖可能需要
+  # pixivflow 通过 extraResources 单独处理，不在这里包含
 
 asar: true
 
-afterPack: build/install-backend-deps.cjs
-
+# 将 pixivflow 后端复制到应用资源目录
+# 这样可以避免在 afterPack 中重新安装，大幅加速构建
+# 注意：extraResources 会将文件复制到 app.asar.unpacked 或 Resources 目录
 extraResources:
-  - from: ../PixivFlow/dist
-    to: backend/dist
+  - from: "node_modules/pixivflow"
+    to: "pixivflow"
     filter:
       - "**/*"
-      - "!**/*.map"
-  - from: ../PixivFlow/package.json
-    to: backend/package.json
-  - from: ../PixivFlow/config
-    to: backend/config
-  - from: ../PixivFlow/data
-    to: backend/data
+
+# 构建优化
+compression: normal  # 使用普通压缩（更快），可选: store, normal, maximum
+removePackageScripts: true  # 移除 package.json 中的脚本以减小体积
+
+# electron-builder 标准钩子：打包后重命名应用
+# 这是 electron-builder 的官方功能，不是自定义脚本
+afterPack: build/afterPack.cjs
 
 mac:
   target:
@@ -46,3 +57,7 @@ mac:
   hardenedRuntime: false
   gatekeeperAssess: false
   artifactName: "${productName}-${version}-${arch}.${ext}"
+  # 通过 extendInfo 设置应用名称（CFBundleName）
+  extendInfo:
+    CFBundleName: PixivFlow
+    CFBundleDisplayName: PixivFlow
