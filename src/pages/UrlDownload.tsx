@@ -84,9 +84,38 @@ export const UrlDownload: React.FC = () => {
             valid: true,
           },
         ]);
-      } else {
-        // 解析失败，显示详细错误信息
-        const errorMessage = (data as any)?.message || t('download.urlDownload.invalidUrl');
+        } else {
+          // 解析失败，显示详细错误信息
+          const rawMessage = (data as any)?.message || t('download.urlDownload.invalidUrl');
+          // 确保错误消息是字符串，不是对象
+          const errorMessage = typeof rawMessage === 'string' 
+            ? rawMessage 
+            : (typeof rawMessage === 'object' && rawMessage !== null 
+                ? JSON.stringify(rawMessage) 
+                : String(rawMessage || t('download.urlDownload.invalidUrl')));
+          message.error(errorMessage);
+          setParsedUrls([
+            {
+              url: singleUrl.trim(),
+              valid: false,
+              error: errorMessage,
+            },
+          ]);
+        }
+      } catch (error) {
+        // 处理网络错误或其他异常
+        const apiError = error as ApiErrorResponse;
+        const rawMessage = 
+          (apiError.response?.data as any)?.data?.message || 
+          apiError.response?.data?.message || 
+          apiError.message || 
+          t('download.urlDownload.parseError');
+        // 确保错误消息是字符串，不是对象
+        const errorMessage = typeof rawMessage === 'string' 
+          ? rawMessage 
+          : (typeof rawMessage === 'object' && rawMessage !== null 
+              ? JSON.stringify(rawMessage) 
+              : String(rawMessage || t('download.urlDownload.parseError')));
         message.error(errorMessage);
         setParsedUrls([
           {
@@ -95,23 +124,6 @@ export const UrlDownload: React.FC = () => {
             error: errorMessage,
           },
         ]);
-      }
-    } catch (error) {
-      // 处理网络错误或其他异常
-      const apiError = error as ApiErrorResponse;
-      const errorMessage = 
-        (apiError.response?.data as any)?.data?.message || 
-        apiError.response?.data?.message || 
-        apiError.message || 
-        t('download.urlDownload.parseError');
-      message.error(errorMessage);
-      setParsedUrls([
-        {
-          url: singleUrl.trim(),
-          valid: false,
-          error: errorMessage,
-        },
-      ]);
     } finally {
       setLoading(false);
     }
@@ -146,7 +158,13 @@ export const UrlDownload: React.FC = () => {
           });
         } else {
           // 解析失败，使用详细错误信息
-          const errorMessage = (data as any)?.message || t('download.urlDownload.invalidUrl');
+          const rawMessage = (data as any)?.message || t('download.urlDownload.invalidUrl');
+          // 确保错误消息是字符串，不是对象
+          const errorMessage = typeof rawMessage === 'string' 
+            ? rawMessage 
+            : (typeof rawMessage === 'object' && rawMessage !== null 
+                ? JSON.stringify(rawMessage) 
+                : String(rawMessage || t('download.urlDownload.invalidUrl')));
           results.push({
             url,
             valid: false,
@@ -156,11 +174,17 @@ export const UrlDownload: React.FC = () => {
       } catch (error) {
         // 处理网络错误或其他异常
         const apiError = error as ApiErrorResponse;
-        const errorMessage = 
+        const rawMessage = 
           (apiError.response?.data as any)?.data?.message || 
           apiError.response?.data?.message || 
           apiError.message || 
           t('download.urlDownload.parseError');
+        // 确保错误消息是字符串，不是对象
+        const errorMessage = typeof rawMessage === 'string' 
+          ? rawMessage 
+          : (typeof rawMessage === 'object' && rawMessage !== null 
+              ? JSON.stringify(rawMessage) 
+              : String(rawMessage || t('download.urlDownload.parseError')));
         results.push({
           url,
           valid: false,
@@ -199,7 +223,14 @@ export const UrlDownload: React.FC = () => {
       }, 1000);
     } catch (error) {
       const apiError = error as ApiErrorResponse;
-      message.error(apiError.response?.data?.message || apiError.message || t('download.urlDownload.downloadError'));
+      const rawMessage = apiError.response?.data?.message || apiError.message || t('download.urlDownload.downloadError');
+      // 确保错误消息是字符串，不是对象
+      const errorMessage = typeof rawMessage === 'string' 
+        ? rawMessage 
+        : (typeof rawMessage === 'object' && rawMessage !== null 
+            ? JSON.stringify(rawMessage) 
+            : String(rawMessage || t('download.urlDownload.downloadError')));
+      message.error(errorMessage);
     } finally {
       setDownloading(false);
     }
@@ -231,7 +262,14 @@ export const UrlDownload: React.FC = () => {
       }, 1000);
     } catch (error) {
       const apiError = error as ApiErrorResponse;
-      message.error(apiError.response?.data?.message || apiError.message || t('download.urlDownload.downloadError'));
+      const rawMessage = apiError.response?.data?.message || apiError.message || t('download.urlDownload.downloadError');
+      // 确保错误消息是字符串，不是对象
+      const errorMessage = typeof rawMessage === 'string' 
+        ? rawMessage 
+        : (typeof rawMessage === 'object' && rawMessage !== null 
+            ? JSON.stringify(rawMessage) 
+            : String(rawMessage || t('download.urlDownload.downloadError')));
+      message.error(errorMessage);
     } finally {
       setDownloading(false);
     }

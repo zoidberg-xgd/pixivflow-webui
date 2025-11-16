@@ -154,10 +154,16 @@ export function useLoginFlow() {
       } catch (error) {
         const { errorCode, message: errorMessage } = extractErrorInfo(error);
         setLoginStep(0);
+        // 确保错误消息是字符串，不是对象
+        const safeErrorMessage = typeof errorMessage === 'string' 
+          ? errorMessage 
+          : (typeof errorMessage === 'object' && errorMessage !== null 
+              ? JSON.stringify(errorMessage) 
+              : String(errorMessage || t('AUTH_LOGIN_FAILED')));
         if (errorCode) {
-          message.error(translateErrorCode(errorCode, t, undefined, errorMessage || t('AUTH_LOGIN_FAILED')));
+          message.error(translateErrorCode(errorCode, t, undefined, safeErrorMessage || t('AUTH_LOGIN_FAILED')));
         } else {
-          message.error(errorMessage || t('AUTH_LOGIN_FAILED'));
+          message.error(safeErrorMessage || t('AUTH_LOGIN_FAILED'));
         }
       }
       return;
@@ -169,10 +175,16 @@ export function useLoginFlow() {
     } catch (error) {
       const { errorCode, message: errorMessage } = extractErrorInfo(error);
       setLoginStep(0);
+      // 确保错误消息是字符串，不是对象
+      const safeErrorMessage = typeof errorMessage === 'string' 
+        ? errorMessage 
+        : (typeof errorMessage === 'object' && errorMessage !== null 
+            ? JSON.stringify(errorMessage) 
+            : String(errorMessage || t('AUTH_LOGIN_FAILED')));
       if (errorCode) {
-        message.error(translateErrorCode(errorCode, t, undefined, errorMessage || t('AUTH_LOGIN_FAILED')));
+        message.error(translateErrorCode(errorCode, t, undefined, safeErrorMessage || t('AUTH_LOGIN_FAILED')));
       } else {
-        message.error(errorMessage || t('AUTH_LOGIN_FAILED'));
+        message.error(safeErrorMessage || t('AUTH_LOGIN_FAILED'));
       }
     }
   }, [loginMode, loginWithTokenAsync, handleLoginSuccess, handleInteractiveLogin, configData, t]);
