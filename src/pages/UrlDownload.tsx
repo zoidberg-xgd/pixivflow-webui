@@ -321,7 +321,11 @@ export const UrlDownload: React.FC = () => {
                         </Text>
                       </div>
                     ) : (
-                      <Text type="danger">{parsedUrls[0].error || ''}</Text>
+                      <div>
+                        <Text type="danger" style={{ whiteSpace: 'pre-line' }}>
+                          {parsedUrls[0].error || ''}
+                        </Text>
+                      </div>
                     )
                   }
                   type={parsedUrls[0].valid ? 'success' : 'error'}
@@ -470,6 +474,12 @@ export const UrlDownload: React.FC = () => {
               </li>
               <li>
                 <code>https://www.pixiv.net/novel/show.php?id=123456</code>
+              </li>
+              <li>
+                <code>https://pixiv.net/i/123456</code> (短链接格式)
+              </li>
+              <li>
+                <code>https://www.pixiv.net/users/123456/artworks/789012</code> (用户作品页面)
               </li>
               <li>
                 <code>123456</code> {t('download.urlDownload.directId')}
