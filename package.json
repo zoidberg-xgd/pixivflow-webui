@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "description": "PixivFlow WebUI Frontend",
+  "main": "electron/main.cjs",
+  "author": "PixivFlow Team",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
@@ -39,7 +41,6 @@
     "ios:open": "npx cap open ios",
     "mobile:sync": "npm run build && npx cap sync"
   },
-  "main": "electron/main.cjs",
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
     "@capacitor/android": "^6.0.0",

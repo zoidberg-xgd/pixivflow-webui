@@ -12,6 +12,7 @@ import Login from '../../pages/Login';
 import { EmptyState } from '../../components/common/EmptyState';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { ErrorDisplay } from '../../components/common/ErrorDisplay';
+import { ErrorCode } from '../../types/errors';
 
 // Mock i18n
 jest.mock('react-i18next', () => ({
@@ -89,11 +90,11 @@ describe('Accessibility (a11y)', () => {
 
     it('ErrorDisplay should have no accessibility violations', async () => {
       const mockError = {
-        code: 'NETWORK_ERROR',
+        code: ErrorCode.NETWORK_ERROR,
         message: 'An error occurred',
       };
       const { container } = renderWithProviders(
-        <ErrorDisplay error={mockError} message="An error occurred" />
+        <ErrorDisplay error={mockError} />
       );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
