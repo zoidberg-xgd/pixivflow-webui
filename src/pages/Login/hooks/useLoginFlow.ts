@@ -27,6 +27,8 @@ export function useLoginFlow() {
     queryKey: QUERY_KEYS.AUTH_STATUS,
     queryFn: () => api.getAuthStatus(),
     retry: false,
+    staleTime: 0, // No cache - always fetch fresh data
+    refetchOnMount: true, // Always refetch when component mounts
     refetchInterval: false,
   });
 

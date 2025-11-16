@@ -41,6 +41,8 @@ export function isAuthenticated(response: unknown): boolean {
   }
 
   // Fallback: check for legacy field names (for backward compatibility)
+  // IMPORTANT: Only check isAuthenticated or authenticated, NOT hasToken
+  // hasToken only indicates token exists, not that it's valid
   if (typeof response === 'object' && response !== null) {
     const obj = response as Record<string, unknown>;
     const responseData = obj.data as Record<string, unknown> | undefined;
@@ -50,18 +52,19 @@ export function isAuthenticated(response: unknown): boolean {
       const nestedData = responseData.data as Record<string, unknown> | undefined;
       const dataToCheck = nestedData || responseData;
       
+      // Only check isAuthenticated or authenticated, NOT hasToken
+      // hasToken === true does NOT mean authenticated === true
       return (
         dataToCheck?.isAuthenticated === true ||
-        dataToCheck?.authenticated === true ||
-        dataToCheck?.hasToken === true
+        dataToCheck?.authenticated === true
       );
     }
     
     // Check top-level fields
+    // Only check isAuthenticated or authenticated, NOT hasToken
     return (
       obj.isAuthenticated === true ||
-      obj.authenticated === true ||
-      obj.hasToken === true
+      obj.authenticated === true
     );
   }
 

@@ -37,19 +37,14 @@ export function useLayoutAuth() {
       // Call logout API to clear token
       await api.logout();
 
-      // Clear all query cache
-      queryClient.clear();
-
       // Show success message
       message.success(t('layout.logoutSuccess'));
 
-      // Navigate to login page
-      navigate('/login', { replace: true });
-
-      // Force page reload to ensure clean state
+      // Force page reload to ensure clean state. This is more reliable than
+      // clearing query cache and navigating, as it guarantees a fresh start.
       setTimeout(() => {
         window.location.href = '/login';
-      }, 500);
+      }, 300); // Reduced delay for faster redirect
     } catch (error: unknown) {
       console.error('Logout failed:', error);
       message.error(t('layout.logoutFailed'));
