@@ -6,6 +6,17 @@ PixivFlow 的现代化、响应式 Web 界面 - 强大的 Pixiv 内容下载器�
 
 **独立前端项目**：这是一个独立的前端项目，与后端完全分离。后端 API 服务器是独立的 npm 包，可以通过 HTTP API 与前端通信。
 
+## 📊 平台支持状态
+
+| 平台 | 状态 | 说明 |
+|------|------|------|
+| 🌐 **Web UI** | ✅ **可用** | 完全可用，推荐使用 |
+| 🖥️ **Electron 桌面应用** | ❌ **未实现** | 功能仍在开发中，尚未完成 |
+| 🤖 **Android 应用** | ❌ **未实现** | 功能仍在开发中，尚未完成 |
+| 📱 **iOS 应用** | ❌ **未实现** | 功能仍在开发中，尚未完成 |
+
+> **建议**：目前请使用 **Web UI** 版本，这是最稳定和功能最完整的版本。
+
 ## 目录
 
 - [功能特性](#功能特性)
@@ -104,7 +115,9 @@ npm run build
 
 ## 移动应用
 
-PixivFlow 支持构建为 Android 和 iOS 原生应用!
+> ⚠️ **重要提示**：Android 和 iOS 应用功能目前**尚未实现**，仍在开发中。以下文档仅供参考，实际功能可能不完整或存在已知问题。
+
+PixivFlow 计划支持构建为 Android 和 iOS 原生应用，但目前仍在开发中。
 
 ### Android 应用方案
 
@@ -182,9 +195,9 @@ npm run ios:open  # 在 Xcode 中打开
 
 ### 构建文档
 
-- [构建指南](./BUILD_GUIDE.md) - Electron 应用构建说明 (⚠️ 开发中，未完成)
-- [移动应用快速入门](./docs/MOBILE_QUICK_START.md) - Android/iOS 应用构建
-- [Android 构建指南](./docs/ANDROID_BUILD_GUIDE.md) - Android 详细构建说明
+- [构建指南](./BUILD_GUIDE.md) - Electron 应用构建说明 (❌ 未实现)
+- [移动应用快速入门](./docs/MOBILE_QUICK_START.md) - Android/iOS 应用构建 (❌ 未实现)
+- [Android 构建指南](./docs/ANDROID_BUILD_GUIDE.md) - Android 详细构建说明 (❌ 未实现)
 
 ## 贡献指南
 

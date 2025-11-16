@@ -4,6 +4,17 @@ Modern, responsive web interface for PixivFlow - A powerful Pixiv content downlo
 
 > **中文版本**: 查看 [README.md](./README.md) 获取中文文档。
 
+## 📊 Platform Support Status
+
+| Platform | Status | Notes |
+|----------|--------|-------|
+| 🌐 **Web UI** | ✅ **Available** | Fully functional, recommended |
+| 🖥️ **Electron Desktop App** | ❌ **Not Implemented** | Still in development, not complete |
+| 🤖 **Android App** | ❌ **Not Implemented** | Still in development, not complete |
+| 📱 **iOS App** | ❌ **Not Implemented** | Still in development, not complete |
+
+> **Recommendation**: Please use the **Web UI** version for now, which is the most stable and feature-complete version.
+
 ## Table of Contents
 
 - [Features](#features)
@@ -97,7 +108,7 @@ Comprehensive documentation is available in the [`docs/`](./docs/) directory:
 
 ### Building
 
-- [Build Guide](./BUILD_GUIDE.md) - Electron app build instructions (⚠️ Work in progress, not complete)
+- [Build Guide](./BUILD_GUIDE.md) - Electron app build instructions (❌ Not Implemented)
 
 ## Contributing
 
