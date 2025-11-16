@@ -240,11 +240,20 @@ function clearAllTimers() {
 
 // 获取项目根目录
 function getProjectRoot() {
-  // 从 electron/main.cjs 向上两级到达项目根目录
-  // __dirname = webui-frontend/electron
-  // ../.. = 项目根目录
-  const projectRoot = path.resolve(__dirname, '../..');
-  return projectRoot;
+  // 从 electron/main.cjs 向上两级到达 pixiv 目录
+  // __dirname = pixivflow-webui/electron
+  // ../.. = pixiv
+  // ../../PixivFlow = PixivFlow 项目目录
+  const pixivRoot = path.resolve(__dirname, '../..');
+  const pixivFlowRoot = path.join(pixivRoot, 'PixivFlow');
+  
+  // 如果 PixivFlow 目录存在，返回它；否则返回 pixivRoot
+  if (fs.existsSync(pixivFlowRoot)) {
+    return pixivFlowRoot;
+  }
+  
+  // 兼容旧路径（如果直接在 PixivFlow 项目内）
+  return pixivRoot;
 }
 
 // 初始化应用的用户数据目录和配置文件
@@ -687,24 +696,32 @@ async function startBackend() {
   if (isDev) {
     const projectRoot = getProjectRoot();
     console.log(`🔧 开发模式：启动后端服务器`);
+    console.log(`📁 __dirname: ${__dirname}`);
     console.log(`📁 项目根目录: ${projectRoot}`);
+    console.log(`📁 项目根目录存在: ${fs.existsSync(projectRoot)}`);
     
     // 验证项目根目录是否存在
-    if (!validatePath(projectRoot, '项目根目录')) {
-      console.error('❌ 无法启动后端：项目根目录不存在');
+    if (!fs.existsSync(projectRoot)) {
+      const errorMsg = `项目根目录不存在: ${projectRoot}`;
+      console.error(`❌ 无法启动后端：${errorMsg}`);
       if (mainWindow) {
-        mainWindow.webContents.send('backend-error', '项目根目录不存在');
+        mainWindow.webContents.send('backend-error', errorMsg);
       }
+      isBackendStarting = false;
       return;
     }
     
     // 验证 package.json 是否存在
     const packageJsonPath = path.join(projectRoot, 'package.json');
-    if (!validatePath(packageJsonPath, 'package.json')) {
-      console.error('❌ 无法启动后端：package.json 不存在');
+    console.log(`📁 package.json路径: ${packageJsonPath}`);
+    console.log(`📁 package.json存在: ${fs.existsSync(packageJsonPath)}`);
+    if (!fs.existsSync(packageJsonPath)) {
+      const errorMsg = `package.json 不存在: ${packageJsonPath}`;
+      console.error(`❌ 无法启动后端：${errorMsg}`);
       if (mainWindow) {
         mainWindow.webContents.send('backend-error', 'package.json 不存在');
       }
+      isBackendStarting = false;
       return;
     }
     
