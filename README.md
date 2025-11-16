@@ -53,7 +53,7 @@ pixivflow-webui/
 │   ├── utils/              # 工具函数
 │   ├── locales/            # 国际化翻译
 │   └── types/              # TypeScript 类型
-├── electron/               # Electron 主进程
+├── electron/               # Electron 主进程 (⚠️ 开发中，未完成)
 ├── e2e/                    # E2E 测试
 ├── docs/                   # 文档
 └── public/                 # 静态资源
@@ -182,7 +182,7 @@ npm run ios:open  # 在 Xcode 中打开
 
 ### 构建文档
 
-- [构建指南](./BUILD_GUIDE.md) - Electron 应用构建说明
+- [构建指南](./BUILD_GUIDE.md) - Electron 应用构建说明 (⚠️ 开发中，未完成)
 - [移动应用快速入门](./docs/MOBILE_QUICK_START.md) - Android/iOS 应用构建
 - [Android 构建指南](./docs/ANDROID_BUILD_GUIDE.md) - Android 详细构建说明
 

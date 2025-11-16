@@ -1,5 +1,7 @@
 # 🚀 PixivFlow Electron 全平台构建指南
 
+> ⚠️ **重要提示**：Electron 桌面应用功能目前**仍在开发中，尚未完成**。虽然可以构建应用，但部分功能可能不完整或存在已知问题。建议优先使用 Web 版本或移动应用版本。
+
 本指南介绍如何构建 PixivFlow Electron 应用的所有平台版本。
 
 ## 📋 前置要求
@@ -222,6 +224,17 @@ xattr -cr /path/to/PixivFlow.app
 # 或在系统设置中允许"任何来源"的应用
 sudo spctl --master-disable
 ```
+
+## ⚠️ 开发状态
+
+**当前状态**：Electron 桌面应用功能仍在积极开发中。
+
+**已知限制**：
+- 部分功能可能不完整
+- 可能存在已知问题
+- 建议优先使用 Web 版本或移动应用版本
+
+**贡献**：欢迎提交 Issue 和 Pull Request 来帮助完善 Electron 应用功能。
 
 ## 📚 更多信息
 

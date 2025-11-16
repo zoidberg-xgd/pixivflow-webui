@@ -49,7 +49,7 @@ pixivflow-webui/
 │   ├── utils/              # Utility functions
 │   ├── locales/            # i18n translations
 │   └── types/              # TypeScript types
-├── electron/               # Electron main process
+├── electron/               # Electron main process (⚠️ Work in progress, not complete)
 ├── e2e/                    # E2E tests
 ├── docs/                   # Documentation
 └── public/                 # Static assets
@@ -97,7 +97,7 @@ Comprehensive documentation is available in the [`docs/`](./docs/) directory:
 
 ### Building
 
-- [Build Guide](./BUILD_GUIDE.md) - Electron app build instructions
+- [Build Guide](./BUILD_GUIDE.md) - Electron app build instructions (⚠️ Work in progress, not complete)
 
 ## Contributing
 
