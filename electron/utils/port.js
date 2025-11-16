@@ -2,7 +2,7 @@
  * 端口管理工具模块
  */
 
-const { net } = require('electron');
+const net = require('net');
 const { spawn } = require('child_process');
 const os = require('os');
 
