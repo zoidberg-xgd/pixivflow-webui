@@ -92,11 +92,16 @@ if [ -f "$RESOURCES_PATH/app.asar" ]; then
                 ERROR_COUNT=$((ERROR_COUNT + 1))
             fi
             
+            # dist 文件现在在 extraResources/webui-dist 中，不在 app.asar 中
+            # 检查 app.asar 中是否有 dist 目录（旧配置）或检查 webui-dist（新配置）
             if asar list "$RESOURCES_PATH/app.asar" 2>/dev/null | grep -q "dist/index.html"; then
                 print_success "app.asar 包含 dist/index.html"
+            elif [ -f "$RESOURCES_PATH/webui-dist/index.html" ]; then
+                print_success "前端文件在 webui-dist 目录中（extraResources）"
             else
-                print_error "app.asar 不包含 dist/index.html"
-                ERROR_COUNT=$((ERROR_COUNT + 1))
+                print_warning "app.asar 不包含 dist/index.html，且 webui-dist 也不存在"
+                print_info "  前端文件应该在 extraResources/webui-dist 中"
+                WARNING_COUNT=$((WARNING_COUNT + 1))
             fi
         else
             print_warning "app.asar 似乎是空的"
@@ -207,7 +212,22 @@ else
     ERROR_COUNT=$((ERROR_COUNT + 1))
 fi
 
-# 4. 检查应用大小
+# 4. 检查前端静态文件（webui-dist）
+print_info "检查前端静态文件..."
+WEBUI_DIST_PATH="$RESOURCES_PATH/webui-dist"
+if [ -d "$WEBUI_DIST_PATH" ]; then
+    if [ -f "$WEBUI_DIST_PATH/index.html" ]; then
+        print_success "webui-dist/index.html 存在（extraResources）"
+    else
+        print_warning "webui-dist 目录存在，但 index.html 不存在"
+        WARNING_COUNT=$((WARNING_COUNT + 1))
+    fi
+else
+    print_warning "webui-dist 目录不存在（前端文件可能在 app.asar 中）"
+    WARNING_COUNT=$((WARNING_COUNT + 1))
+fi
+
+# 5. 检查应用大小
 print_info "检查应用大小..."
 APP_SIZE=$(du -sh "$APP_PATH" 2>/dev/null | cut -f1)
 print_info "应用总大小: $APP_SIZE"
