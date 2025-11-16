@@ -129,15 +129,27 @@ if [ -d "$PIXIVFLOW_PATH" ]; then
     if [ -f "$PIXIVFLOW_PATH/package.json" ]; then
         print_success "pixivflow/package.json 存在"
         
-        # 检查入口文件
-        PIXIVFLOW_MAIN=$(node -e "console.log(require('$PIXIVFLOW_PATH/package.json').main || 'index.js')" 2>/dev/null || echo "index.js")
-        PIXIVFLOW_BIN=$(node -e "const pkg = require('$PIXIVFLOW_PATH/package.json'); console.log(pkg.bin ? (typeof pkg.bin === 'string' ? pkg.bin : (pkg.bin.pixivflow || 'index.js')) : 'index.js')" 2>/dev/null || echo "index.js")
+        # 检查入口文件（pixivflow 的入口文件在 dist/index.js）
+        PIXIVFLOW_MAIN=$(node -e "console.log(require('$PIXIVFLOW_PATH/package.json').main || 'index.js')" 2>/dev/null || echo "dist/index.js")
         
-        if [ -f "$PIXIVFLOW_PATH/$PIXIVFLOW_MAIN" ] || [ -f "$PIXIVFLOW_PATH/$PIXIVFLOW_BIN" ]; then
-            print_success "pixivflow 入口文件存在"
+        if [ -f "$PIXIVFLOW_PATH/$PIXIVFLOW_MAIN" ]; then
+            print_success "pixivflow 入口文件存在: $PIXIVFLOW_MAIN"
         else
-            print_error "pixivflow 入口文件不存在 (main: $PIXIVFLOW_MAIN, bin: $PIXIVFLOW_BIN)"
-            ERROR_COUNT=$((ERROR_COUNT + 1))
+            # 尝试查找 dist/index.js（pixivflow 的实际入口）
+            if [ -f "$PIXIVFLOW_PATH/dist/index.js" ]; then
+                print_success "pixivflow 入口文件存在: dist/index.js"
+            else
+                print_error "pixivflow 入口文件不存在 (main: $PIXIVFLOW_MAIN)"
+                ERROR_COUNT=$((ERROR_COUNT + 1))
+            fi
+        fi
+        
+        # 检查关键目录
+        if [ -d "$PIXIVFLOW_PATH/dist" ]; then
+            print_success "pixivflow/dist 目录存在"
+        else
+            print_warning "pixivflow/dist 目录不存在"
+            WARNING_COUNT=$((WARNING_COUNT + 1))
         fi
     else
         print_error "pixivflow/package.json 不存在"

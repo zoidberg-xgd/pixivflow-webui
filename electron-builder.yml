@@ -13,20 +13,31 @@ directories:
   buildResources: build
   output: release
 
-# files 配置：指定要打包的文件
-# electron-builder 默认会包含 package.json 和 main 字段指定的文件
-# 这里明确指定需要包含的文件和目录
+# files 配置：打包所有必要的文件
+# electron-builder 会自动包含 package.json 中 dependencies 的所有依赖
 files:
-  - package.json
-  - electron/**/*
-  - dist/**/*
+  - "package.json"
+  - "electron/**/*"
+  - "dist/**/*"
   - "!electron/**/*.{ts,map}"
   - "!dist/**/*.map"
   - "!src/**/*"
   - "!**/.git/**/*"
   - "!**/.DS_Store"
-  # 注意：不要排除所有 node_modules，因为某些依赖可能需要
-  # pixivflow 通过 extraResources 单独处理，不在这里包含
+  # 包含所有 node_modules（electron-builder 会自动排除 devDependencies）
+  # 这样可以确保所有运行时依赖都被包含，避免遗漏
+  - "node_modules/**/*"
+  # 排除一些不需要的文件以减小体积
+  - "!**/node_modules/**/*.md"
+  - "!**/node_modules/**/*.txt"
+  - "!**/node_modules/**/*.map"
+  - "!**/node_modules/**/test/**/*"
+  - "!**/node_modules/**/tests/**/*"
+  - "!**/node_modules/**/__tests__/**/*"
+  - "!**/node_modules/**/*.test.js"
+  - "!**/node_modules/**/*.spec.js"
+  - "!**/node_modules/**/examples/**/*"
+  - "!**/node_modules/**/example/**/*"
 
 asar: true
 
@@ -36,6 +47,16 @@ asar: true
 extraResources:
   - from: "node_modules/pixivflow"
     to: "pixivflow"
+    filter:
+      - "**/*"
+  # 复制 pixivflow 的 node_modules（后端依赖）
+  - from: "node_modules/pixivflow/node_modules"
+    to: "pixivflow/node_modules"
+    filter:
+      - "**/*"
+  # 复制前端 dist 文件到 extraResources，方便后端直接访问
+  - from: "dist"
+    to: "webui-dist"
     filter:
       - "**/*"
 

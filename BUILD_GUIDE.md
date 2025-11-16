@@ -170,8 +170,62 @@ npm run electron:build
 ls -lh release/
 ```
 
+## 🐛 常见问题
+
+### 问题：应用启动时报错 "Cannot find module 'axios'" 或其他模块
+
+**原因**：Electron 主进程使用的依赖（如 axios）没有被正确打包进 `app.asar`。
+
+**解决方案**：
+
+1. 确保 `electron-builder.yml` 中的 `files` 配置包含了所有主进程需要的依赖
+2. 使用提供的脚本自动收集 axios 的所有依赖：
+
+```bash
+node build/collect-axios-deps.cjs
+```
+
+3. 将输出的依赖列表添加到 `electron-builder.yml` 的 `files` 配置中
+4. 重新构建应用
+
+**技术细节**：
+
+- Electron 主进程（`main.cjs`）中使用的所有 npm 包都需要被打包
+- `axios` 有 23 个传递依赖，都需要包含在 `app.asar` 中
+- 配置示例：
+
+```yaml
+files:
+  - "!**/node_modules/**/*"  # 先排除所有
+  - "node_modules/axios/**/*"  # 再包含需要的
+  - "node_modules/asynckit/**/*"
+  # ... 其他依赖
+```
+
+### 问题：构建后应用体积过大
+
+**解决方案**：
+
+1. 检查是否包含了不必要的文件
+2. 使用 `asar` 压缩（默认已启用）
+3. 排除开发依赖和源代码文件
+4. 使用 `compression: maximum` 提高压缩率（会增加构建时间）
+
+### 问题：macOS 应用无法打开（提示"已损坏"）
+
+**解决方案**：
+
+```bash
+# 移除隔离属性
+xattr -cr /path/to/PixivFlow.app
+
+# 或在系统设置中允许"任何来源"的应用
+sudo spctl --master-disable
+```
+
 ## 📚 更多信息
 
 - [Electron Builder 文档](https://www.electron.build/)
 - [Electron 文档](https://www.electronjs.org/docs)
 - [开发指南](./docs/DEVELOPMENT_GUIDE.md)
+- [依赖打包工具](./build/collect-axios-deps.cjs) - 自动收集 axios 依赖

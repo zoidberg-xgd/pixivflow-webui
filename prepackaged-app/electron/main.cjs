@@ -27,41 +27,18 @@ try {
 // 尝试加载 pixiv-token-getter（优先使用）
 let pixivTokenGetter = null;
 try {
-  // 在生产模式下，pixiv-token-getter 应该在 app.asar 的 node_modules 中
-  // 尝试从多个可能的位置加载
-  let loaded = false;
-  const possiblePaths = [
-    'pixiv-token-getter', // 默认路径（从 node_modules 加载）
-    path.join(__dirname, '../../node_modules/pixiv-token-getter'), // 开发模式
-    path.join(process.resourcesPath || '', '..', 'app.asar', 'node_modules', 'pixiv-token-getter'), // 生产模式（app.asar）
-  ];
-  
-  for (const modulePath of possiblePaths) {
-    try {
-      pixivTokenGetter = require(modulePath);
-      loaded = true;
-      console.log(`✅ pixiv-token-getter 已加载: ${modulePath}`);
-      break;
-    } catch (e) {
-      // 继续尝试下一个路径
-    }
-  }
-  
-  if (!loaded) {
-    throw new Error('无法找到 pixiv-token-getter 模块');
-  }
-  
+  pixivTokenGetter = require('pixiv-token-getter');
   // 尝试加载适配器（如果可用）
   try {
     // 尝试多个可能的路径
-    const adapterPaths = [
+    const possiblePaths = [
       path.join(__dirname, '../../dist/pixiv-token-getter-adapter.js'), // 开发模式：从 electron 目录
       path.join(process.cwd(), 'dist/pixiv-token-getter-adapter.js'), // 从项目根目录
       path.join(process.resourcesPath || '', 'dist/pixiv-token-getter-adapter.js'), // 生产模式
     ];
     
     let adapterPath = null;
-    for (const possiblePath of adapterPaths) {
+    for (const possiblePath of possiblePaths) {
       if (possiblePath && fs.existsSync(possiblePath)) {
         adapterPath = possiblePath;
         break;
@@ -80,8 +57,7 @@ try {
   }
 } catch (error) {
   console.warn('⚠️  pixiv-token-getter 未安装，将使用 Puppeteer 或 BrowserWindow 登录方案');
-  console.warn('   错误:', error.message);
-  console.warn('   如需使用 pixiv-token-getter 登录，请确保已安装该依赖');
+  console.warn('   如需使用 pixiv-token-getter 登录，请运行: npm install pixiv-token-getter');
 }
 
 let mainWindow = null;

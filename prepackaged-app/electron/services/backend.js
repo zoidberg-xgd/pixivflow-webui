@@ -258,48 +258,24 @@ class BackendService {
     }
 
     // 前端静态文件路径
-    // 优先从 extraResources 中读取（webui-dist）
-    // 如果不存在，尝试从 app.asar 中读取
+    // 尝试多个可能的位置
     let staticPath = null;
     const possibleStaticPaths = [
-      // 优先：从 extraResources 中读取（推荐，性能更好）
       path.join(resourcesPath, 'webui-dist'),
-      // 备选：从 app.asar 中读取
-      path.join(resourcesPath, '..', 'app.asar', 'dist'),
-      // 其他可能的位置
-      path.join(resourcesPath, 'dist'),
       path.join(resourcesPath, '..', 'app.asar.unpacked', 'dist'),
+      path.join(resourcesPath, 'dist'),
     ];
     
     for (const possiblePath of possibleStaticPaths) {
-      // 对于 asar 路径，Node.js 可以直接访问，但需要检查文件是否存在
-      if (possiblePath.includes('app.asar')) {
-        // 尝试访问 asar 中的文件
-        const testFile = path.join(possiblePath, 'index.html');
-        try {
-          // 在 Electron 中，可以直接使用 fs 访问 asar 文件
-          if (fs.existsSync(testFile)) {
-            staticPath = possiblePath;
-            safeLog(`✅ 找到静态文件目录（app.asar）: ${staticPath}`);
-            break;
-          }
-        } catch (e) {
-          // 继续尝试下一个路径
-        }
-      } else if (fs.existsSync(possiblePath)) {
-        // 检查目录中是否有 index.html
-        const testFile = path.join(possiblePath, 'index.html');
-        if (fs.existsSync(testFile)) {
-          staticPath = possiblePath;
-          safeLog(`✅ 找到静态文件目录: ${staticPath}`);
-          break;
-        }
+      if (fs.existsSync(possiblePath)) {
+        staticPath = possiblePath;
+        safeLog(`✅ 找到静态文件目录: ${staticPath}`);
+        break;
       }
     }
     
     if (!staticPath) {
       safeLog('⚠️  未找到静态文件目录，后端将只提供 API 服务');
-      safeLog('   提示: 前端文件应该在 Resources/webui-dist 或 app.asar/dist 中');
     }
 
     safeLog('🚀 启动后端服务器（生产模式）...');
@@ -308,65 +284,16 @@ class BackendService {
       safeLog(`📁 静态文件路径: ${staticPath}`);
     }
 
-    // 设置 NODE_PATH，让后端能找到它的依赖
-    // pixivflow 的 node_modules 在 pixivflow/node_modules 目录
-    const nodePathParts = [];
-    
-    if (backendCwd) {
-      // 优先使用 pixivflow 自己的 node_modules
-      const pixivflowNodeModules = path.join(backendCwd, 'node_modules');
-      if (fs.existsSync(pixivflowNodeModules)) {
-        nodePathParts.push(pixivflowNodeModules);
-        safeLog(`📦 使用 pixivflow node_modules: ${pixivflowNodeModules}`);
-      } else {
-        safeLog(`⚠️  pixivflow node_modules 不存在: ${pixivflowNodeModules}`);
-      }
-    }
-    
-    // 添加系统 NODE_PATH
-    if (process.env.NODE_PATH) {
-      nodePathParts.push(process.env.NODE_PATH);
-    }
-    
-    const nodePath = nodePathParts.length > 0 ? nodePathParts.join(path.delimiter) : undefined;
-
-    // 设置环境变量
-    // 重要：使用 ELECTRON_RUN_AS_NODE 让 Electron 作为 Node.js 运行后端脚本
     const env = {
       ...process.env,
-      ELECTRON_RUN_AS_NODE: '1', // 关键：让 Electron 作为 Node.js 运行
       STATIC_PATH: staticPath,
       PIXIV_DOWNLOADER_CONFIG: appData.configPath,
       NODE_ENV: 'production',
       PORT: BACKEND_PORT.toString(),
       HOST: 'localhost',
     };
-    
-    // 只有在有值时才设置 NODE_PATH
-    if (nodePath) {
-      env.NODE_PATH = nodePath;
-      safeLog(`📦 NODE_PATH: ${nodePath}`);
-    } else {
-      safeLog(`⚠️  NODE_PATH 未设置（pixivflow 依赖可能无法加载）`);
-    }
-    
-    // 验证后端文件是否存在
-    if (!fs.existsSync(backendPath)) {
-      safeError(`❌ 后端入口文件不存在: ${backendPath}`);
-      this.isBackendStarting = false;
-      if (this.mainWindow) {
-        this.mainWindow.webContents.send('backend-error', `后端入口文件不存在: ${backendPath}`);
-      }
-      return;
-    }
-    
-    safeLog(`🚀 启动后端进程: ${process.execPath} ${backendPath}`);
-    safeLog(`📁 工作目录: ${backendCwd}`);
-    safeLog(`📁 ELECTRON_RUN_AS_NODE: ${env.ELECTRON_RUN_AS_NODE}`);
 
     try {
-      // 使用 process.execPath (Electron) 运行后端，但设置 ELECTRON_RUN_AS_NODE=1
-      // 这样 Electron 会作为 Node.js 运行，可以执行普通的 Node.js 脚本
       this.backendProcess = spawn(process.execPath, [backendPath], {
         cwd: backendCwd,
         env: env,
@@ -388,37 +315,13 @@ class BackendService {
 
     this.backendProcess.stdout.on('data', (data) => {
       const msg = data.toString();
-      const trimmedMsg = msg.trim();
-      if (trimmedMsg) {
-        safeLog(`[Backend] ${trimmedMsg}`);
-      }
-      
-      // 检测后端启动成功的多种模式
-      const startPatterns = [
-        /WebUI server started on http:\/\/localhost:(\d+)/i,
-        /Server started on http:\/\/localhost:(\d+)/i,
-        /listening on port\s*(\d+)/i,
-        /PORT:\s*(\d+)/i,
-        /started on port\s*(\d+)/i,
-      ];
-      
-      for (const pattern of startPatterns) {
-        const match = trimmedMsg.match(pattern);
+      safeLog(`[Backend] ${msg.trim()}`);
+      if (msg.includes('WebUI server started on http://localhost:')) {
+        const match = msg.match(/http:\/\/localhost:(\d+)/);
         if (match && match[1]) {
-          const detectedPort = parseInt(match[1], 10);
-          if (detectedPort !== this.actualBackendPort) {
-            this.actualBackendPort = detectedPort;
-            safeLog(`✅ 检测到后端服务器端口: ${this.actualBackendPort}`);
-          }
-          // 延迟一点再检查，确保服务器完全启动
-          safeSetTimeout(() => {
-            this.checkBackendReady((ready) => {
-              if (ready) {
-                safeLog(`✅ 后端服务器启动成功，端口: ${this.actualBackendPort}`);
-              }
-            });
-          }, 1000);
-          break;
+          this.actualBackendPort = parseInt(match[1], 10);
+          safeLog(`✅ 后端服务器启动成功，端口: ${this.actualBackendPort}`);
+          this.checkBackendReady(() => {});
         }
       }
     });
@@ -438,19 +341,8 @@ class BackendService {
       this.isBackendStarting = false;
       
       if (code !== 0 && code !== null && !this.isAppClosing) {
-        // 检查重启次数限制
-        if (this.backendRestartCount < MAX_BACKEND_RESTARTS) {
-          safeError(`⚠️  后端进程意外关闭，尝试重启 (${this.backendRestartCount}/${MAX_BACKEND_RESTARTS})...`);
-          safeSetTimeout(() => this.startBackend(), 3000);
-        } else {
-          safeError(`❌ 后端重启次数已达上限 (${MAX_BACKEND_RESTARTS})，停止自动重启`);
-          if (this.mainWindow) {
-            this.mainWindow.webContents.send(
-              'backend-error',
-              `后端服务器启动失败，已尝试 ${MAX_BACKEND_RESTARTS} 次。请检查日志并手动重启应用。`
-            );
-          }
-        }
+        safeError('⚠️  后端进程意外关闭，尝试重启...');
+        safeSetTimeout(() => this.startBackend(), 3000);
       }
     });
 
@@ -463,19 +355,8 @@ class BackendService {
         this.mainWindow.webContents.send('backend-error', `无法启动后端进程: ${err.message}`);
       }
       if (!this.isAppClosing) {
-        // 检查重启次数限制
-        if (this.backendRestartCount < MAX_BACKEND_RESTARTS) {
-          safeError(`⚠️  后端进程启动出错，尝试重启 (${this.backendRestartCount}/${MAX_BACKEND_RESTARTS})...`);
-          safeSetTimeout(() => this.startBackend(), 5000);
-        } else {
-          safeError(`❌ 后端重启次数已达上限 (${MAX_BACKEND_RESTARTS})，停止自动重启`);
-          if (this.mainWindow) {
-            this.mainWindow.webContents.send(
-              'backend-error',
-              `后端服务器启动失败，已尝试 ${MAX_BACKEND_RESTARTS} 次。请检查日志并手动重启应用。`
-            );
-          }
-        }
+        safeError('⚠️  后端进程启动出错，尝试重启...');
+        safeSetTimeout(() => this.startBackend(), 5000);
       }
     });
 
