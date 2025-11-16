@@ -85,18 +85,25 @@ export const UrlDownload: React.FC = () => {
           },
         ]);
       } else {
-        message.error(t('download.urlDownload.parseError'));
+        // 解析失败，显示详细错误信息
+        const errorMessage = (data as any)?.message || t('download.urlDownload.invalidUrl');
+        message.error(errorMessage);
         setParsedUrls([
           {
             url: singleUrl.trim(),
             valid: false,
-            error: t('download.urlDownload.invalidUrl'),
+            error: errorMessage,
           },
         ]);
       }
     } catch (error) {
+      // 处理网络错误或其他异常
       const apiError = error as ApiErrorResponse;
-      const errorMessage = apiError.response?.data?.message || apiError.message || t('download.urlDownload.parseError');
+      const errorMessage = 
+        (apiError.response?.data as any)?.data?.message || 
+        apiError.response?.data?.message || 
+        apiError.message || 
+        t('download.urlDownload.parseError');
       message.error(errorMessage);
       setParsedUrls([
         {
@@ -138,18 +145,26 @@ export const UrlDownload: React.FC = () => {
             valid: true,
           });
         } else {
+          // 解析失败，使用详细错误信息
+          const errorMessage = (data as any)?.message || t('download.urlDownload.invalidUrl');
           results.push({
             url,
             valid: false,
-            error: t('download.urlDownload.invalidUrl'),
+            error: errorMessage,
           });
         }
       } catch (error) {
+        // 处理网络错误或其他异常
         const apiError = error as ApiErrorResponse;
+        const errorMessage = 
+          (apiError.response?.data as any)?.data?.message || 
+          apiError.response?.data?.message || 
+          apiError.message || 
+          t('download.urlDownload.parseError');
         results.push({
           url,
           valid: false,
-          error: apiError.response?.data?.message || apiError.message || t('download.urlDownload.parseError'),
+          error: errorMessage,
         });
       }
     }
