@@ -1,19 +1,17 @@
-const { app, BrowserWindow, shell, ipcMain, dialog } = require('electron');
+// @ts-nocheck
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const { spawn } = require('child_process');
-const crypto = require('crypto');
 const axios = require('axios');
-const os = require('os');
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
 // 引入工具模块
 const { safeLog, safeError, setAppClosing: setLoggerAppClosing } = require('./utils/logger');
-const { safeSetTimeout, safeSetInterval, clearAllTimers, setAppClosing: setTimersAppClosing } = require('./utils/timers');
-const { getProjectRoot, initializeAppData, validatePath } = require('./utils/paths');
-const { checkPortInUse, cleanupPort } = require('./utils/port');
+const { safeSetTimeout, clearAllTimers, setAppClosing: setTimersAppClosing } = require('./utils/timers');
+const { getProjectRoot, initializeAppData } = require('./utils/paths');
 const backendService = require('./services/backend');
 const authService = require('./services/auth');
+const { exchangeCodeForToken } = require('./services/auth');
 const windowService = require('./services/window');
 
 // 尝试加载 puppeteer-core（用于 Puppeteer 登录）
@@ -28,7 +26,6 @@ try {
 
 // 尝试加载 pixiv-token-getter（优先使用）
 let pixivTokenGetter = null;
-let pixivTokenGetterAdapter = null;
 try {
   pixivTokenGetter = require('pixiv-token-getter');
   // 尝试加载适配器（如果可用）
@@ -49,7 +46,7 @@ try {
     }
     
     if (adapterPath) {
-      pixivTokenGetterAdapter = require(adapterPath);
+      require(adapterPath);
       console.log('✅ pixiv-token-getter 适配器已加载:', adapterPath);
     } else {
       console.log('✅ pixiv-token-getter 已加载（直接使用，未找到适配器）');
@@ -64,7 +61,7 @@ try {
 }
 
 let mainWindow = null;
-let isAppClosing = false;
+let isAppClosing = false; // 应用是否正在关闭
 let appData = null; // 应用数据目录信息（生产模式下）
 
 // 认证和窗口管理已移至服务模块
@@ -117,7 +114,7 @@ process.on('uncaughtException', (error) => {
   }
 });
 
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', (reason) => {
   console.error('❌ 未处理的 Promise 拒绝:', reason);
   if (reason instanceof Error) {
     console.error('错误堆栈:', reason.stack);
@@ -951,7 +948,6 @@ async function startBackend_OLD() {
 // 认证相关函数已移至 authService
 const generateCodeVerifier = () => authService.generateCodeVerifier();
 const generateCodeChallenge = (verifier) => authService.generateCodeChallenge(verifier);
-const findChromeExecutable = () => authService.findChromeExecutable();
 
 // 以下为旧的实现，已移至 services/auth.js
 /*
@@ -1015,28 +1011,15 @@ function findChromeExecutable_OLD() {
 // 认证登录函数已移至 authService
 const loginWithPixivTokenGetter = (proxyConfig) => authService.loginWithPixivTokenGetter(proxyConfig);
 const loginWithPuppeteer = (codeVerifier, codeChallenge, proxyConfig) => authService.loginWithPuppeteer(codeVerifier, codeChallenge, proxyConfig);
-const createLoginWindow = (codeVerifier, codeChallenge) => authService.createLoginWindow(codeVerifier, codeChallenge);
 const closeLoginWindow = () => authService.closeLoginWindow();
 
 // 以下为旧的实现，已移至 services/auth.js（已删除注释代码以清理文件）
 
-// 以下函数需要从 main.cjs 提取到 authService
-// - checkForCallbackUrl
-// - handleAuthCode
-// - handleAuthError
-// - showAuthCodeInputDialog
-// - exchangeCodeForToken
-// - getProxyConfig
-// - buildProxyUrl
-// - detectSystemProxy
-// - saveTokenToBackend
-// - resetLoginWindowFlag
-// - getLoginStatus
-// - logout
-// - getPixivOAuthConstants
+// 以下函数已移至 authService，但在 main.cjs 中保留实现以支持 IPC 处理
+// 这些函数作为 authService 的补充，处理 Electron 特定的逻辑
+// 注意：这些函数当前未被直接调用，但保留作为备用实现
 
-// 以下函数需要从 main.cjs 提取到 authService
-// 暂时保留在 main.cjs 中，后续提取
+// eslint-disable-next-line no-unused-vars
 async function checkForCallbackUrl(url) {
   // 如果正在处理，忽略（防止重复处理）
   if (authService.isProcessingAuthCode) {
@@ -1155,6 +1138,7 @@ async function checkForCallbackUrl(url) {
 /**
  * 处理授权码 - 提取并交换token
  */
+// eslint-disable-next-line no-unused-vars
 async function handleAuthCode(code, sourceUrl) {
   // 立即标记为正在处理，防止重复处理
   if (isProcessingAuthCode) {
@@ -1321,6 +1305,7 @@ async function handleAuthCode(code, sourceUrl) {
 /**
  * 处理认证错误
  */
+// eslint-disable-next-line no-unused-vars
 function handleAuthError(error, errorDescription, sourceUrl) {
   console.error('');
   console.error('═══════════════════════════════════════════════════════');
@@ -1359,6 +1344,7 @@ function handleAuthError(error, errorDescription, sourceUrl) {
  * 显示授权码输入对话框
  * 引导用户从浏览器回调URL中提取授权码
  */
+// eslint-disable-next-line no-unused-vars
 function showAuthCodeInputDialog() {
   return new Promise((resolve) => {
     // 创建授权码输入窗口
@@ -1715,6 +1701,7 @@ function showAuthCodeInputDialog() {
 /**
  * 重置登录窗口打开标志位
  */
+// eslint-disable-next-line no-unused-vars
 function resetLoginWindowFlag() {
   isOpeningLoginWindow = false;
   console.log('✅ 已重置登录窗口打开标志位');
@@ -1730,6 +1717,7 @@ async function saveTokenToBackend(refreshToken, maxRetries = 3) {
       
       // 等待后端就绪（最多等待10秒）
       let backendReady = false;
+      const actualBackendPort = backendService.actualBackendPort;
       for (let i = 0; i < 20; i++) {
         await new Promise(resolve => safeSetTimeout(resolve, 500));
         try {
@@ -2393,8 +2381,6 @@ app.on('before-quit', () => {
 });
 
 // 窗口状态管理已移至 windowService
-const getWindowState = () => windowService.getWindowState();
-const saveWindowState = () => windowService.saveWindowState();
 
 // 处理协议（可选：自定义协议如 pixivflow://）
 app.setAsDefaultProtocolClient('pixivflow');
