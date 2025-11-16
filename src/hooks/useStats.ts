@@ -4,8 +4,9 @@ import { QUERY_KEYS } from '../constants';
 
 /**
  * Hook for getting overview statistics
+ * @param refetchInterval - Auto-refresh interval in milliseconds (default: 5000ms)
  */
-export function useStatsOverview() {
+export function useStatsOverview(refetchInterval: number | false = 5000) {
   const {
     data: stats,
     isLoading,
@@ -14,6 +15,7 @@ export function useStatsOverview() {
   } = useQuery({
     queryKey: QUERY_KEYS.STATS_OVERVIEW,
     queryFn: () => statsService.getStatsOverview(),
+    refetchInterval: refetchInterval,
   });
 
   return {
